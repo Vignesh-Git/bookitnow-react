@@ -6,6 +6,8 @@ import { Fragment } from "react";
 import FlightDateRangeInput from "./FlightDateRangeInput";
 import { GuestsObject } from "../type";
 import NcInputNumber from "components/NcInputNumber/NcInputNumber";
+import DurationInput from "../DurationInput";
+import TimeInput from "../TimeInput";
 
 export interface FlightSearchFormProps {}
 
@@ -230,15 +232,31 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
             className="flex-1"
             divHideVerticalLineClass=" -inset-x-0.5"
           />
-        <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
-         
-          
+       
           
           <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
           <FlightDateRangeInput
             selectsRange={dropOffLocationType !== "oneWay"}
             className="flex-1"
           />
+
+        <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
+         
+         <TimeInput
+             placeHolder="Time"
+             desc="At what time?"
+             className="flex-1"
+             divHideVerticalLineClass=" -inset-x-0.5"
+           />
+
+<div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
+         
+          <DurationInput
+             placeHolder="Duration"
+             desc="How long?"
+             className="flex-1"
+             divHideVerticalLineClass=" -inset-x-0.5"
+           />
           
         </div>
       </form>

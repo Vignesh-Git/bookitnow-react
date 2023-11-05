@@ -12,7 +12,7 @@ export interface LocationInputProps {
   autoFocus?: boolean;
 }
 
-const LocationInput: FC<LocationInputProps> = ({
+const DurationInput: FC<LocationInputProps> = ({
   autoFocus = false,
   placeHolder = "Location",
   desc = "Where are you going?",
@@ -61,19 +61,16 @@ const LocationInput: FC<LocationInputProps> = ({
     setShowPopover(false);
   };
 
+  const optionsList = [
+    "1 Hour", "1.5 Hours", "2 Hours", "2.5 Hours", "3 Hours", "3.5 Hours", "4 Hours", "4.5 Hours", "5 Hours", "5.5 Hours", "6 Hours"
+  ]
+
   const renderRecentSearches = () => {
     return (
       <>
-        <h3 className="block mt-2 sm:mt-0 px-4 sm:px-8 font-semibold text-base sm:text-lg text-neutral-800 dark:text-neutral-100">
-          Recent searches
-        </h3>
+        
         <div className="mt-2">
-          {[
-            "Hamptons, Suffolk County, NY",
-            "Las Vegas, NV, United States",
-            "Ueno, Taito, Tokyo",
-            "Ikebukuro, Toshima, Tokyo",
-          ].map((item) => (
+          {optionsList.map((item) => (
             <span
               onClick={() => handleSelectLocation(item)}
               key={item}
@@ -95,12 +92,7 @@ const LocationInput: FC<LocationInputProps> = ({
   const renderSearchValue = () => {
     return (
       <>
-        {[
-          "Ha Noi, Viet Nam",
-          "San Diego, CA",
-          "Humboldt Park, Chicago, IL",
-          "Bangor, Northern Ireland",
-        ].map((item) => (
+        {optionsList.map((item) => (
           <span
             onClick={() => handleSelectLocation(item)}
             key={item}
@@ -169,4 +161,4 @@ const LocationInput: FC<LocationInputProps> = ({
   );
 };
 
-export default LocationInput;
+export default DurationInput;
