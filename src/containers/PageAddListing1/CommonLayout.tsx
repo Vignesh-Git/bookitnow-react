@@ -5,8 +5,10 @@ import ButtonSecondary from "shared/Button/ButtonSecondary";
 
 export interface CommonLayoutProps {
   index: string;
-  nextHref: string;
-  backtHref: string;
+  backBtnOnClick?: () => void;
+  NextBtnOnClick?: () => void;
+  backtHref?: string;
+  nextHref?: string;
   nextBtnText?: string;
   children: React.ReactNode;
 }
@@ -14,9 +16,9 @@ export interface CommonLayoutProps {
 const CommonLayout: FC<CommonLayoutProps> = ({
   index = "01",
   children,
-  nextHref,
+  backBtnOnClick,
   nextBtnText,
-  backtHref,
+  NextBtnOnClick,
 }) => {
   return (
     <div
@@ -27,7 +29,7 @@ const CommonLayout: FC<CommonLayoutProps> = ({
         <div>
           <span className="text-4xl font-semibold">{index}</span>{" "}
           <span className="text-lg text-neutral-500 dark:text-neutral-400">
-            / 10
+            / 2
           </span>
         </div>
 
@@ -35,12 +37,18 @@ const CommonLayout: FC<CommonLayoutProps> = ({
         <div className="listingSection__wrap ">{children}</div>
 
         {/* --------------------- */}
-        <div className="flex justify-end space-x-5">
-          <ButtonSecondary href={backtHref}>Go back</ButtonSecondary>
-          <ButtonPrimary href={nextHref}>
-            {nextBtnText || "Continue"}
-          </ButtonPrimary>
-        </div>
+        {
+          <div className="flex justify-end space-x-5">
+            {backBtnOnClick && (
+              <ButtonSecondary onClick={backBtnOnClick}>
+                Go back
+              </ButtonSecondary>
+            )}
+            <ButtonPrimary onClick={NextBtnOnClick}>
+              {nextBtnText || "Continue"}
+            </ButtonPrimary>
+          </div>
+        }
       </div>
     </div>
   );

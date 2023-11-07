@@ -136,7 +136,7 @@ const LocationInput: FC<LocationInputProps> = ({
             placeholder={placeHolder}
             value={value}
             autoFocus={showPopover}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setValue(e.currentTarget.value);
             }}
             ref={inputRef}

@@ -16,12 +16,13 @@ const SectionHero: FC<SectionHeroProps> = ({ className = "" }) => {
       <div className="flex flex-col lg:flex-row lg:items-center">
         <div className="flex-shrink-0 lg:w-1/2 flex flex-col items-start space-y-8 sm:space-y-10 pb-14 lg:pb-64 xl:pr-14 lg:mr-10 xl:mr-0">
           <h2 className="font-medium text-4xl md:text-5xl xl:text-7xl !leading-[114%] ">
-          Unlock Your Game, Reserve Your Venue.
+            Unlock Your Game, Reserve Your Venue.
           </h2>
           <span className="text-base md:text-lg text-neutral-500 dark:text-neutral-400">
-          Score your perfect venue, right at your fingertips. Game on with BookItNow
+            Score your perfect venue, right at your fingertips. Game on with
+            BookItNow
           </span>
-          <ButtonPrimary>Start your search</ButtonPrimary>
+          <ButtonPrimary href={"/create"}>Create your venue</ButtonPrimary>
         </div>
         <div className="flex-grow">
           <img className="w-full" src={imagePng} alt="hero" />

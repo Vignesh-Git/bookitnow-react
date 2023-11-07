@@ -46,6 +46,9 @@ import PageHome3 from "containers/PageHome/PageHome3";
 import ListingStayDetailPage from "containers/ListingDetailPage/listing-stay-detail/ListingStayDetailPage";
 import ListingCarDetailPage from "containers/ListingDetailPage/listing-car-detail/ListingCarDetailPage";
 import ListingExperiencesDetailPage from "containers/ListingDetailPage/listing-experiences-detail/ListingExperiencesDetailPage";
+import VenueCreationForm from "components/CreationForm/VenueCreationForm";
+import CourtCreationForm from "components/CreationForm/CourtCreationForm";
+import CreationForm from "components/CreationForm";
 
 export const pages: Page[] = [
   { path: "/", exact: true, component: PageHome },
@@ -108,7 +111,7 @@ export const pages: Page[] = [
   { path: "/signup", component: PageSignUp },
   { path: "/login", component: PageLogin },
   { path: "/subscription", component: PageSubcription },
-  //
+  { path: "/create", component: CreationForm },
 ];
 
 const MyRoutes = () => {

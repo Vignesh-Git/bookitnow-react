@@ -97,7 +97,7 @@ const PropertyTypeSelect: FC<PropertyTypeSelectProps> = ({
                         label={item.name}
                         subLabel={item.description}
                         defaultChecked={typeOfProperty[index].checked}
-                        onChange={(e) => {
+                        onChange={(e: any) => {
                           const newState = typeOfProperty.map((item, i) => {
                             if (i === index) {
                               return { ...item, checked: e };

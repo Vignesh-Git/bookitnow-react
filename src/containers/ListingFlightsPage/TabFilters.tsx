@@ -256,7 +256,7 @@ const TabFilters = () => {
                       name="All Airlines"
                       label="All Airlines"
                       defaultChecked={airlinesStates.includes("All Airlines")}
-                      onChange={(checked) =>
+                      onChange={(checked: any) =>
                         handleChangeAirlines(checked, "All Airlines")
                       }
                     />
@@ -267,7 +267,7 @@ const TabFilters = () => {
                           name={item.name}
                           label={item.name}
                           defaultChecked={airlinesStates.includes(item.name)}
-                          onChange={(checked) =>
+                          onChange={(checked: any) =>
                             handleChangeAirlines(checked, item.name)
                           }
                         />
@@ -342,7 +342,7 @@ const TabFilters = () => {
                           name={item.name}
                           label={item.name}
                           defaultChecked={stopPontsStates.includes(item.name)}
-                          onChange={(checked) =>
+                          onChange={(checked: any) =>
                             handleChangeStopPoint(checked, item.name)
                           }
                         />

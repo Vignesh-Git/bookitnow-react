@@ -35,7 +35,7 @@ const PriceRangeInput: FC<PriceRangeInputProps> = ({
           defaultValue={[rangePrices[0], rangePrices[1]]}
           allowCross={false}
           step={1000}
-          onChange={(e) => {
+          onChange={(e: any) => {
             setRangePrices(e as number[]);
             onChange && onChange(e as number[]);
           }}
