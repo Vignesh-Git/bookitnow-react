@@ -127,7 +127,6 @@ const SectionSliderNewCategories: FC<SectionSliderNewCategoriesProps> = ({
   }, [MY_GLIDEJS, UNIQUE_CLASS]);
 
   const renderCard = (item: TaxonomyType, index: number) => {
-    console.log(item)
     switch (categoryCardType) {
       case "card3":
         return <CardCategory3 taxonomy={item} />;

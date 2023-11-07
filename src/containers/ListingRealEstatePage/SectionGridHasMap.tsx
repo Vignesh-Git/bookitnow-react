@@ -14,7 +14,6 @@ const SectionGridHasMap: FC<{}> = () => {
   const [currentHoverID, setCurrentHoverID] = useState<string | number>(-1);
   const [showFullMapFixed, setShowFullMapFixed] = useState(false);
 
-  console.log({ currentHoverID });
 
   return (
     <div>

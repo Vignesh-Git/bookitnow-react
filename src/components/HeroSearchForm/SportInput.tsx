@@ -1,6 +1,6 @@
 "use client";
 
-import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, MapPinIcon, TrophyIcon } from "@heroicons/react/24/outline";
 import React, { useState, useRef, useEffect, FC } from "react";
 import ClearDataButton from "./ClearDataButton";
 
@@ -12,7 +12,7 @@ export interface LocationInputProps {
   autoFocus?: boolean;
 }
 
-const TimeInput: FC<LocationInputProps> = ({
+const SportInput: FC<LocationInputProps> = ({
   autoFocus = false,
   placeHolder = "Location",
   desc = "Where are you going?",
@@ -62,8 +62,7 @@ const TimeInput: FC<LocationInputProps> = ({
   };
 
   const optionsList = [
-    "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM",
-    "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM", "12:00 AM", "12:30 AM", "1:00 AM", "1:30 AM", "2:00 AM", "2:30 AM", "3:00 AM", "3:30 AM", "4:00 AM", "4:30 AM", "5:00 AM", "5:30 AM", "6:00 AM", "6:30 AM",
+   "Badminton", "Foodball", "Soccer"
   ]
 
   const renderRecentSearches = () => {
@@ -78,7 +77,7 @@ const TimeInput: FC<LocationInputProps> = ({
               className="flex px-4 sm:px-8 items-center space-x-3 sm:space-x-4 py-4 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
             >
               <span className="block text-neutral-400">
-                <ClockIcon className="h-4 sm:h-6 w-4 sm:w-6" />
+                <TrophyIcon className="h-4 sm:h-6 w-4 sm:w-6" />
               </span>
               <span className=" block font-medium text-neutral-700 dark:text-neutral-200">
                 {item}
@@ -100,7 +99,7 @@ const TimeInput: FC<LocationInputProps> = ({
             className="flex px-4 sm:px-8 items-center space-x-3 sm:space-x-4 py-4 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
           >
             <span className="block text-neutral-400">
-              <ClockIcon className="h-4 w-4 sm:h-6 sm:w-6" />
+              <TrophyIcon className="h-4 w-4 sm:h-6 sm:w-6" />
             </span>
             <span className="block font-medium text-neutral-700 dark:text-neutral-200">
               {item}
@@ -120,7 +119,7 @@ const TimeInput: FC<LocationInputProps> = ({
         }`}
       >
         <div className="text-neutral-300 dark:text-neutral-400">
-          <ClockIcon className="w-5 h-5 lg:w-7 lg:h-7" />
+          <TrophyIcon className="w-5 h-5 lg:w-7 lg:h-7" />
         </div>
         <div className="flex-grow">
           <input
@@ -162,4 +161,4 @@ const TimeInput: FC<LocationInputProps> = ({
   );
 };
 
-export default TimeInput;
+export default SportInput;
