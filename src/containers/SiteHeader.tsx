@@ -218,7 +218,7 @@ const SiteHeader = () => {
       <Helmet>
         <title>BookItNow || Sports Venue Reservation</title>
       </Helmet>
-      {renderControlSelections()}
+      {/* {renderControlSelections()} */}
       {renderHeader()}
       <div ref={anchorRef} className="h-1 absolute invisible"></div>
     </>
