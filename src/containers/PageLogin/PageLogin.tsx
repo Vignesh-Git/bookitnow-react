@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import facebookSvg from "images/Facebook.svg";
 import twitterSvg from "images/Twitter.svg";
 import googleSvg from "images/Google.svg";
@@ -6,6 +6,8 @@ import { Helmet } from "react-helmet";
 import Input from "shared/Input/Input";
 import { Link } from "react-router-dom";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
+import axios, { isCancel, AxiosError } from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 export interface PageLoginProps {
   className?: string;
@@ -30,6 +32,26 @@ const loginSocials = [
 ];
 
 const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    setIsLoading(true)
+    let email = e.target[0].value;
+    let password = e.target[1].value;
+    
+    axios.post(`${process.env.REACT_APP_API_DOMAIN}/api/user/login`, {
+      email, password
+    }).then((response) => {
+      setIsLoading(false)
+    }).catch((err) => {
+      setIsLoading(false)
+      toast.error("Something went wrong!", {
+        position: toast.POSITION.TOP_RIGHT
+      })
+    })
+  }
   return (
     <div className={`nc-PageLogin ${className}`} data-nc-id="PageLogin">
       <Helmet>
