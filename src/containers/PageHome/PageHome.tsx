@@ -13,6 +13,8 @@ import SectionGridCategoryBox from "components/SectionGridCategoryBox/SectionGri
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
 import SectionVideos from "./SectionVideos";
 import SectionClientSay from "components/SectionClientSay/SectionClientSay";
+import GallerySlider from "components/GallerySlider/GallerySlider";
+import SectionHero3 from "components/SectionHero/SectionHero3";
 
 const DEMO_CATS: TaxonomyType[] = [
   {
@@ -117,9 +119,18 @@ function PageHome() {
       {/* GLASSMOPHIN */}
       <BgGlassmorphism />
 
+      <GallerySlider
+        uniqueID="sd"
+        ratioClass=" h-[620px]"
+        autoPlay={2000}
+        componentList={[<SectionHero3 />, <SectionHero3 />]}
+      />
+      
+
       <div className="container relative space-y-24 mb-24 lg:space-y-28 lg:mb-28">
         {/* SECTION HERO */}
         <SectionHero className="pt-10 lg:pt-16 lg:pb-16" />
+        
 
         {/* SECTION 1 */}
         {/* <SectionSliderNewCategories
