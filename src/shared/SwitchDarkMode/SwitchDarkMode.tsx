@@ -10,8 +10,7 @@ const SwitchDarkMode: React.FC<SwitchDarkModeProps> = ({ className = "" }) => {
   useEffect(() => {
     if (
       localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches)
+      (window.matchMedia("(prefers-color-scheme: dark)").matches)
     ) {
       toDark();
     } else {

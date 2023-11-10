@@ -113,6 +113,9 @@ const DEMO_CATS_2: TaxonomyType[] = [
   },
 ];
 
+
+
+
 function PageHome() {
   return (
     <div className="nc-PageHome relative overflow-hidden">
@@ -129,7 +132,7 @@ function PageHome() {
 
       <div className="container relative space-y-24 mb-24 lg:space-y-28 lg:mb-28">
         {/* SECTION HERO */}
-        <SectionHero className="pt-10 lg:pt-16 lg:pb-16" />
+        <SectionHero  />
         
 
         {/* SECTION 1 */}
