@@ -160,7 +160,9 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
           desc="Venue: Professional hospitality businesses that usually have a unique style or theme defining their brand and decor"
         >
           <Input {...formik.getFieldProps("name")} placeholder="Places name" />
-          <p className="text-xs text-[red]">{formik.errors.name}</p>
+          {formik.touched.name && formik.errors.name && (
+            <div className="text-red-900 text-[14px]">{formik.errors.name}</div>
+          )}
         </FormItem>
         <FormItem
           label="Your place description for client"
@@ -173,7 +175,11 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
             placeholder="..."
             rows={14}
           />
-          <p className="text-xs text-[red]">{formik.errors.description}</p>
+          {formik.touched.description && formik.errors.description && (
+            <div className="text-red-900 text-[14px]">
+              {formik.errors.description}
+            </div>
+          )}
         </FormItem>
       </div>
       <div className="flex flex-col gap-5 mt-5">
@@ -190,51 +196,73 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
               <option value="Korea">Korea</option>
               <option value="...">...</option>
             </Select>
-            <p className="text-xs text-[red]">
-              {formik.errors.address?.country}
-            </p>
+            {formik.touched.address?.country &&
+              formik.errors.address?.country && (
+                <div className="text-red-900 text-[14px]">
+                  {formik.errors.name}
+                </div>
+              )}
           </FormItem>
           <FormItem label="Street">
             <Input
               {...formik.getFieldProps("address.street_name")}
               placeholder="..."
             />
-            <p className="text-xs text-[red]">
-              {formik.errors.address?.street_name}
-            </p>
+            {formik.touched.address?.street_name &&
+              formik.errors.address?.street_name && (
+                <div className="text-red-900 text-[14px]">
+                  {formik.errors.address.street_name}
+                </div>
+              )}
           </FormItem>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-5">
             <FormItem label="City">
               <Input {...formik.getFieldProps("address.city")} />
-              <p className="text-xs text-[red]">
-                {formik.errors.address?.city}
-              </p>
+              {formik.touched.address?.city && formik.errors.address?.city && (
+                <div className="text-red-900 text-[14px]">
+                  {formik.errors.address.city}
+                </div>
+              )}
             </FormItem>
             <FormItem label="State">
               <Input {...formik.getFieldProps("address.state")} />
-              <p className="text-xs text-[red]">
-                {formik.errors.address?.state}
-              </p>
+              {formik.touched.address?.state &&
+                formik.errors.address?.state && (
+                  <div className="text-red-900 text-[14px]">
+                    {formik.errors.address.state}
+                  </div>
+                )}
             </FormItem>
             <FormItem label="Postal code">
               <Input {...formik.getFieldProps("address.pincode")} />
-              <p className="text-xs text-[red]">
-                {formik.errors.address?.pincode}
-              </p>
+              {formik.touched.address?.pincode &&
+                formik.errors.address?.pincode && (
+                  <div className="text-red-900 text-[14px]">
+                    {formik.errors.address.pincode}
+                  </div>
+                )}
             </FormItem>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-5">
             <FormItem label="Latitude">
               <Input {...formik.getFieldProps("address.geo_location.lat")} />
-              <p className="text-xs text-[red]">
-                {formik.errors.address?.geo_location?.lat}
-              </p>
+              {formik.touched.address?.geo_location?.lat &&
+                formik.errors.address?.geo_location?.lat && (
+                  <div className="text-red-900 text-[14px]">
+                    {formik.errors.address.geo_location.lat}
+                  </div>
+                )}
             </FormItem>
             <FormItem label="Longitude">
               <Input {...formik.getFieldProps("address.geo_location.long")} />
               <p className="text-xs text-[red]">
-                {formik.errors.address?.geo_location?.long}
+                {formik.touched.address?.geo_location?.long &&
+                  formik.errors.address?.geo_location?.long && (
+                    <div className="text-red-900 text-[14px]">
+                      {formik.errors.address.geo_location.long}
+                    </div>
+                  )}
               </p>
             </FormItem>
           </div>
@@ -252,7 +280,11 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
             />
           ))}
         </div>
-        <p className="text-xs text-[red]">{formik.errors.available_days}</p>
+        {formik.touched.available_days && formik.errors.available_days && (
+          <div className="text-red-900 text-[14px]">
+            {formik.errors.available_days}
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-5 mt-5">
         <h2 className="text-2xl font-semibold">Amentites Info</h2>
@@ -262,7 +294,11 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
             <Checkbox label={amenity} {...formik.getFieldProps("amenities")} />
           ))}
         </div>
-        <p className="text-xs text-[red]">{formik.errors.amenities}</p>
+        {formik.touched.amenities && formik.errors.amenities && (
+          <div className="text-red-900 text-[14px]">
+            {formik.errors.amenities}
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-5 mt-5">
         <div>
@@ -300,7 +336,11 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
                 </div>
               </div>
             </div>
-            <p className="text-xs text-[red]">{formik.errors.hero_image}</p>
+            {formik.touched.hero_image && formik.errors.hero_image && (
+              <div className="text-red-900 text-[14px]">
+                {formik.errors.hero_image}
+              </div>
+            )}
 
             {formik.values.hero_image && (
               <div className="mt-5">
@@ -348,7 +388,11 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
                 </div>
               </div>
             </div>
-            <p className="text-xs text-[red]">{formik.errors.extra_images}</p>
+            {formik.touched.extra_images && formik.errors.extra_images && (
+              <div className="text-red-900 text-[14px]">
+                {formik.errors.extra_images}
+              </div>
+            )}
 
             {formik.values.extra_images.length > 0 && (
               <div className="mt-5">

@@ -11,7 +11,7 @@ import TimeInput from "../TimeInput";
 import SportInput from "../SportInput";
 import ButtonSubmit from "../ButtonSubmit";
 
-export interface FlightSearchFormProps { }
+export interface FlightSearchFormProps {}
 
 const flightClass = [
   {
@@ -76,8 +76,9 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
             >
               <span>{`${totalGuests || ""} Guests`}</span>
               <ChevronDownIcon
-                className={`${open ? "" : "text-opacity-70"
-                  } ml-2 h-4 w-4 group-hover:text-opacity-80 transition ease-in-out duration-150`}
+                className={`${
+                  open ? "" : "text-opacity-70"
+                } ml-2 h-4 w-4 group-hover:text-opacity-80 transition ease-in-out duration-150`}
                 aria-hidden="true"
               />
             </Popover.Button>
@@ -138,8 +139,9 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
             >
               <span>{`${flightClassState}`}</span>
               <ChevronDownIcon
-                className={`${open ? "" : "text-opacity-70"
-                  } ml-2 h-4 w-4 group-hover:text-opacity-80 transition ease-in-out duration-150`}
+                className={`${
+                  open ? "" : "text-opacity-70"
+                } ml-2 h-4 w-4 group-hover:text-opacity-80 transition ease-in-out duration-150`}
                 aria-hidden="true"
               />
             </Popover.Button>
@@ -183,19 +185,21 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
     return (
       <div className=" py-5 [ nc-hero-field-padding ] flex flex-row flex-wrap border-b border-neutral-100 dark:border-neutral-700">
         <div
-          className={`py-1.5 px-4 flex items-center rounded-full font-medium text-xs cursor-pointer mr-2 my-1 sm:mr-3 ${dropOffLocationType === "roundTrip"
+          className={`py-1.5 px-4 flex items-center rounded-full font-medium text-xs cursor-pointer mr-2 my-1 sm:mr-3 ${
+            dropOffLocationType === "roundTrip"
               ? "bg-black shadow-black/10 shadow-lg text-white"
               : "border border-neutral-300 dark:border-neutral-700"
-            }`}
+          }`}
           onClick={(e) => setDropOffLocationType("roundTrip")}
         >
           Round-trip
         </div>
         <div
-          className={`py-1.5 px-4 flex items-center rounded-full font-medium text-xs cursor-pointer mr-2 my-1 sm:mr-3 ${dropOffLocationType === "oneWay"
+          className={`py-1.5 px-4 flex items-center rounded-full font-medium text-xs cursor-pointer mr-2 my-1 sm:mr-3 ${
+            dropOffLocationType === "oneWay"
               ? "bg-black text-white shadow-black/10 shadow-lg"
               : "border border-neutral-300 dark:border-neutral-700"
-            }`}
+          }`}
           onClick={(e) => setDropOffLocationType("oneWay")}
         >
           One-way
@@ -231,7 +235,6 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
             divHideVerticalLineClass=" -inset-x-0.5"
           />
 
-
           <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
           <FlightDateRangeInput
             selectsRange={dropOffLocationType !== "oneWay"}
@@ -256,10 +259,9 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
             divHideVerticalLineClass=" -inset-x-0.5"
           />
 
-
-      <div className="py-4 pr-4">
-                    <ButtonSubmit href="/listing-car-detail" />
-                </div>
+          <div className="py-4 pr-4">
+            <ButtonSubmit href="/listing-car-detail" />
+          </div>
         </div>
       </form>
     );

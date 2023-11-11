@@ -1,10 +1,15 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { MinusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import TimeInput, { optionsList } from "components/HeroSearchForm/TimeInput";
 import CommonLayout from "containers/PageAddListing1/CommonLayout";
 import FormItem from "containers/PageAddListing1/FormItem";
 import Upload from "images/Upload";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Checkbox from "shared/Checkbox/Checkbox";
 import Input from "shared/Input/Input";
+import NcDropDown from "shared/NcDropDown/NcDropDown";
+import Select from "shared/Select/Select";
 import Textarea from "shared/Textarea/Textarea";
 import * as yup from "yup";
 
@@ -15,6 +20,9 @@ function CourtForm({
   showError,
   totalCount,
   onChange,
+  addCustomPrice,
+  onCustomPriceChange,
+  onCustomPriceDelete,
 }: {
   courtData: any;
   onDelete: () => void;
@@ -22,6 +30,9 @@ function CourtForm({
   showError: boolean;
   totalCount: number;
   onChange: any;
+  addCustomPrice: () => void;
+  onCustomPriceChange: any;
+  onCustomPriceDelete: any;
 }) {
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -32,7 +43,15 @@ function CourtForm({
       onChange(base64Image, "hero_image");
     }
   };
-
+  const week = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
   const handleMultipleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -130,6 +149,68 @@ function CourtForm({
           {!courtData.policy && showError ? "Policy is Required" : null}
         </p>
       </FormItem>
+      <FormItem label="Default Pricing">
+        <Input
+          placeholder="Eg., $1"
+          type="number"
+          id="default_price"
+          name="default_price"
+          onChange={(e) => onChange(e.target.value, "default_price")}
+          value={courtData.default_price}
+        />
+      </FormItem>
+
+      <FormItem label="Custom Pricing">
+        {courtData.custom_price.map((price: any, idx: number) => (
+          <div className="flex items-center  gap-4 mt-5">
+            <div className="w-full text-sm items-stretch flex rounded-sm border border-neutral-200 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 ">
+              <Select
+                value={price.day}
+                className="border-none w-[30%] rounded-none"
+                onChange={(e) => {
+                  onCustomPriceChange(e.target.value, "day", idx);
+                }}
+              >
+                {week.map((wk) => (
+                  <option label={wk}>{wk}</option>
+                ))}
+              </Select>
+              <div className="w-[1px] bg-neutral-200 dark:bg-neutral-700"></div>
+
+              <Select
+                value={price.slot}
+                className="border-none w-[30%] rounded-none"
+                onChange={(e) => {
+                  onCustomPriceChange(e.target.value, "slot", idx);
+                }}
+              >
+                {optionsList.map((opt) => (
+                  <option label={opt}>{opt}</option>
+                ))}
+              </Select>
+
+              <div className="w-[1px] bg-neutral-200 dark:bg-neutral-700"></div>
+              <Input
+                onChange={(e) => {
+                  onCustomPriceChange(e.target.value, "price", idx);
+                }}
+                value={price.price}
+                className="w-[40%] rounded-none border-none"
+                placeholder="Price"
+              />
+            </div>
+            <PlusCircleIcon
+              className="w-7 h-7 inline"
+              onClick={addCustomPrice}
+            />
+            <MinusCircleIcon
+              className="w-7 h-7 inline"
+              onClick={() => onCustomPriceDelete(idx)}
+            />
+          </div>
+        ))}
+      </FormItem>
+
       <div className="flex flex-col gap-5 mt-5">
         <div className="space-y-8">
           <div>
@@ -140,13 +221,13 @@ function CourtForm({
                   <Upload />
                   <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
                     <label
-                      htmlFor="file-upload"
+                      htmlFor={`file-upload${courtNo}`}
                       className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
                     >
                       <span>Upload a file</span>
                       <input
-                        id="file-upload"
-                        name="file-upload"
+                        id={`file-upload${courtNo}`}
+                        name={`file-upload${courtNo}`}
                         type="file"
                         className="sr-only"
                         accept="image/jpeg, image/png, image/gif, image/bmp, image/webp"
@@ -183,13 +264,13 @@ function CourtForm({
                       <Upload />
                       <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
                         <label
-                          htmlFor="gallery-upload"
+                          htmlFor={`gallery-upload${courtNo}`}
                           className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
                         >
                           <span>Upload a file</span>
                           <input
-                            id="gallery-upload"
-                            name="gallery-upload"
+                            id={`gallery-upload${courtNo}`}
+                            name={`gallery-upload${courtNo}`}
                             type="file"
                             className="sr-only"
                             onChange={handleMultipleImageChange}
@@ -252,6 +333,11 @@ function CourtCreationForm({ onSubmit }: { onSubmit: any }) {
       policy: "",
       hero_image: "",
       gallery_image: [],
+      default_price: "",
+      custom_price: [
+        { day: "", slot: "", price: "" },
+        { day: "", slot: "", price: "" },
+      ],
     },
   ]);
 
@@ -265,6 +351,8 @@ function CourtCreationForm({ onSubmit }: { onSubmit: any }) {
         policy: "",
         hero_image: "",
         gallery_image: [],
+        default_price: "",
+        custom_price: [{ day: "", slot: "", price: "" }],
       },
     ]);
   };
@@ -284,6 +372,7 @@ function CourtCreationForm({ onSubmit }: { onSubmit: any }) {
       nextBtnText="Submit"
       NextBtnOnClick={() => {
         setShowError(true);
+        console.log(courts);
         onSubmit(courts);
       }}
     >
@@ -304,7 +393,19 @@ function CourtCreationForm({ onSubmit }: { onSubmit: any }) {
               courts[index][name] = value;
               setCourts([...courts]);
             }}
+            addCustomPrice={() => {
+              court.custom_price.push({ day: "", slot: "", price: "" });
+              setCourts([...courts]);
+            }}
             showError={showError}
+            onCustomPriceChange={(value: string, name: string, idx: number) => {
+              courts[index].custom_price[idx][name] = value;
+              setCourts([...courts]);
+            }}
+            onCustomPriceDelete={(idx: number) => {
+              courts[index].custom_price.splice(idx, 1);
+              setCourts([...courts]);
+            }}
           />
         </div>
       ))}

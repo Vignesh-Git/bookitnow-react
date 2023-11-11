@@ -1,6 +1,6 @@
 import { avatarColors } from "contains/contants";
 import React, { FC } from "react";
-import avatar1 from "images/avatars/Image-1.png";
+import avatar1 from "images/avatars/account.jpg";
 
 export interface AvatarProps {
   containerClassName?: string;

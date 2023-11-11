@@ -15,6 +15,7 @@ import SectionVideos from "./SectionVideos";
 import SectionClientSay from "components/SectionClientSay/SectionClientSay";
 import GallerySlider from "components/GallerySlider/GallerySlider";
 import SectionHero3 from "components/SectionHero/SectionHero3";
+import ResultGridFeature from "./ResultGridFeature";
 
 const DEMO_CATS: TaxonomyType[] = [
   {
@@ -53,7 +54,7 @@ const DEMO_CATS: TaxonomyType[] = [
     thumbnail:
       "https://cdn-jiaap.nitrocdn.com/QxFildkZbOSQJPKuySjQTwLiIYhgZTWh/assets/images/optimized/rev-ccd2578/activ8athlete.com/wp-content/uploads/2021/08/Activ8-Private-Training-1.png",
   },
-  
+
   {
     id: "2",
     href: "/listing-stay",
@@ -62,7 +63,7 @@ const DEMO_CATS: TaxonomyType[] = [
     count: 188288,
     thumbnail:
       "https://m.economictimes.com/thumb/msid-77734860,width-1200,height-900,resizemode-4,imgsize-951020/sports_istock.jpg",
-  }
+  },
 ];
 
 const DEMO_CATS_2: TaxonomyType[] = [
@@ -113,27 +114,15 @@ const DEMO_CATS_2: TaxonomyType[] = [
   },
 ];
 
-
-
-
 function PageHome() {
   return (
     <div className="nc-PageHome relative overflow-hidden">
       {/* GLASSMOPHIN */}
       <BgGlassmorphism />
+      <SectionHero />
 
-      <GallerySlider
-        uniqueID="sd"
-        ratioClass=" h-[620px]"
-        autoPlay={2000}
-        componentList={[<SectionHero3 />, <SectionHero3 />]}
-      />
-      
-
-      <div className="container relative space-y-24 mb-24 lg:space-y-28 lg:mb-28">
+      <div className="container mt-24 relative space-y-24 mb-24 lg:space-y-28 lg:mb-28">
         {/* SECTION HERO */}
-        <SectionHero  />
-        
 
         {/* SECTION 1 */}
         {/* <SectionSliderNewCategories
@@ -143,13 +132,13 @@ function PageHome() {
 
         <div className="relative py-16">
           <BackgroundSection />
-          <SectionGridFeaturePlaces />
-
+          <ResultGridFeature heading="Filtered Venues" />
+          <div className="my-10">
+            <SectionGridFeaturePlaces />
+          </div>
         </div>
 
-
         {/* SECTION2 */}
-
 
         {/* SECTION */}
         <SectionOurFeatures />
@@ -177,10 +166,7 @@ function PageHome() {
             categories={DEMO_CATS}
             uniqueClassName="PageHome_services"
           />
-
         </div>
-
-
 
         {/* SECTION */}
         <SectionBecomeAnAuthor />
@@ -211,7 +197,6 @@ function PageHome() {
 
         {/* SECTION */}
         {/* <SectionVideos /> */}
-
 
         {/* SECTION */}
         <div className="relative py-16">

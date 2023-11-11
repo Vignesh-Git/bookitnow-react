@@ -12,9 +12,6 @@ const PAGES_REAL_ESTATE: PathName[] = [
 
 const HeroSearchForm2MobileFactory = () => {
   const pathname = useLocation().pathname;
-  if (PAGES_REAL_ESTATE.includes(pathname as PathName)) {
-    return <HeroSearchForm2RealEstateMobile />;
-  }
   return <HeroSearchForm2Mobile />;
 };
 

@@ -1,12 +1,14 @@
 import React, { FC } from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
-import imagePng from "images/c1.jpg";
+
 
 export interface SectionHero3Props {
   className?: string;
+  imagePng?: string;
+  tagLine?: string;
 }
 
-const SectionHero3: FC<SectionHero3Props> = ({ className = "" }) => {
+const SectionHero3: FC<SectionHero3Props> = ({ className = "", imagePng, tagLine }) => {
   return (
     <div
       className={`nc-SectionHero3 relative ${className}`}
@@ -17,14 +19,14 @@ const SectionHero3: FC<SectionHero3Props> = ({ className = "" }) => {
           Bookitnow
         </span>
         <h2 className="font-bold text-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl !leading-[115%] ">
-          New generation <br /> of booking
+          {tagLine}
         </h2>
         <ButtonPrimary
           sizeClass="px-6 py-3 lg:px-8 lg:py-4 rounded-xl"
           fontSize="text-sm sm:text-base lg:text-lg font-medium"
-          href={"/create"}
+          href={"#FeaturedVenues"}
         >
-          Create your Venue
+          Explore more
         </ButtonPrimary>
       </div>
       <div className="relative aspect-w-1 aspect-h-1 sm:aspect-w-4 sm:aspect-h-3 lg:aspect-w-16 lg:aspect-h-9 xl:aspect-h-8 ">

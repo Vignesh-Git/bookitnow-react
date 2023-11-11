@@ -3,7 +3,7 @@ import VenueCreationForm from "./VenueCreationForm";
 import CourtCreationForm from "./CourtCreationForm";
 
 function CreationForm() {
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(2);
   const [data, setData] = useState();
 
   useEffect(() => {

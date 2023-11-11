@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import axios, { isCancel, AxiosError } from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import tokenHandler from "utils/tokenHandler";
+import { useNavigate  } from 'react-router-dom';
 
 export interface PageLoginProps {
   className?: string;
@@ -34,6 +36,7 @@ const loginSocials = [
 const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
 
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -45,6 +48,9 @@ const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
       email, password
     }).then((response) => {
       setIsLoading(false)
+      tokenHandler.setToCookie('bint', response.data.token)
+      navigate("/");
+      window.location.reload()
     }).catch((err) => {
       setIsLoading(false)
       toast.error("Something went wrong!", {
@@ -88,7 +94,7 @@ const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
             <div className="absolute left-0 w-full top-1/2 transform -translate-y-1/2 border border-neutral-100 dark:border-neutral-800"></div>
           </div>
           {/* FORM */}
-          <form className="grid grid-cols-1 gap-6" action="#" method="post">
+          <form className="grid grid-cols-1 gap-6" onSubmit={(e) => { handleSubmit(e) }}>
             <label className="block">
               <span className="text-neutral-800 dark:text-neutral-200">
                 Email address

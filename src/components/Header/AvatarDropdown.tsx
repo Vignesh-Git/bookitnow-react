@@ -6,49 +6,50 @@ import {
   HomeIcon,
   ArrowRightOnRectangleIcon,
   LifebuoyIcon,
+  PlusCircleIcon
+  
 } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "shared/Avatar/Avatar";
+import tokenHandler from "utils/tokenHandler";
+import { useNavigate  } from 'react-router-dom';
 
-const solutions = [
-  {
-    name: "Account",
-    href: "/author",
-    icon: UserCircleIcon,
-  },
-  {
-    name: "Messages",
-    href: "##",
-    icon: ChatBubbleBottomCenterTextIcon,
-  },
-  {
-    name: "Wishlists",
-    href: "/account-savelists",
-    icon: HeartIcon,
-  },
-  {
-    name: "Booking",
-    href: "##",
-    icon: HomeIcon,
-  },
-];
 
-const solutionsFoot = [
-  {
-    name: "Help",
-    href: "##",
-    icon: LifebuoyIcon,
-  },
 
-  {
-    name: "Logout",
-    href: "##",
-    icon: ArrowRightOnRectangleIcon,
-  },
-];
 
-export default function AvatarDropdown() {
+export default function AvatarDropdown({isAdmin= false}) {
+
+  const navigate = useNavigate();
+
+  const solutions = [
+    {
+      name: "Booking",
+      href: "/booking",
+      icon: HomeIcon,
+      isVisible : isAdmin
+    },
+    {
+      name: "Add venue",
+      href: "/create",
+      icon: PlusCircleIcon,
+      isVisible : isAdmin
+    },
+  ];
+  
+  const solutionsFoot = [
+    {
+      name: "Logout",
+      href: "##",
+      icon: ArrowRightOnRectangleIcon,
+      onClick : ()=>{
+        tokenHandler.deleteACookie("bint");
+        navigate("/");
+        window.location.reload()
+      }
+    },
+  ];
+
   return (
     <div className="AvatarDropdown">
       <Popover className="relative">
@@ -70,10 +71,14 @@ export default function AvatarDropdown() {
             >
               <Popover.Panel className="absolute z-10 w-screen max-w-[260px] px-4 mt-4 -right-10 sm:right-0 sm:px-0">
                 <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="relative grid gap-6 bg-white dark:bg-neutral-800 p-7">
+                  
                     {solutions.map((item, index) => (
+                      item.isVisible && 
+                      <div 
+                      key={index}
+                      className="relative grid gap-6 bg-white dark:bg-neutral-800 p-7">
                       <Link
-                        key={index}
+                       
                         to={item.href}
                         className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       >
@@ -84,12 +89,14 @@ export default function AvatarDropdown() {
                           <p className="text-sm font-medium ">{item.name}</p>
                         </div>
                       </Link>
+                      </div>
                     ))}
-                  </div>
+                 
                   <hr className="h-[1px] border-t border-neutral-300 dark:border-neutral-700" />
                   <div className="relative grid gap-6 bg-white dark:bg-neutral-800 p-7">
                     {solutionsFoot.map((item, index) => (
                       <a
+                        onClick={item.onClick}
                         key={index}
                         href={item.href}
                         className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"

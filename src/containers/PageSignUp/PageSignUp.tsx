@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import axios, { isCancel, AxiosError } from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import tokenHandler from "utils/tokenHandler";
+import { useNavigate  } from 'react-router-dom';
 
 export interface PageSignUpProps {
   className?: string;
@@ -39,6 +41,7 @@ const loginSocials = [
 const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
 
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -52,6 +55,9 @@ const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
         email, password
       }).then((response) => {
         setIsLoading(false)
+        tokenHandler.setToCookie('bint', response.data.token)
+        navigate("/");
+        window.location.reload()
       }).catch((err) => {
         setIsLoading(false)
         toast.error("Something went wrong!", {

@@ -6,7 +6,7 @@ import twFocusClass from "utils/twFocusClass";
 export interface NcDropDownItem {
   id: string;
   name: string;
-  icon: string;
+  icon?: string;
 }
 
 export interface NcDropDownProps {
