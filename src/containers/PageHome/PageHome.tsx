@@ -132,10 +132,8 @@ function PageHome() {
 
         <div className="relative py-16">
           <BackgroundSection />
-          <ResultGridFeature heading="Filtered Venues" />
-          <div className="my-10">
-            <SectionGridFeaturePlaces />
-          </div>
+          {/* <ResultGridFeature heading="Filtered Venues" /> */}
+          <SectionGridFeaturePlaces />
         </div>
 
         {/* SECTION2 */}
