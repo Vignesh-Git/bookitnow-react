@@ -14,24 +14,22 @@ export interface MainNav1Props {
 
 const MainNav1: FC<MainNav1Props> = ({ className = "" }) => {
   const [loginState, setLoginState] = useState({
-    isStateFinalized : false,
+    isStateFinalized: false,
     isLoggedIn: false,
     isAdmin: false,
   });
 
-  useEffect(()=>{
-    let token = tokenHandler.searchInCookie("bint")
-    if(token){
+  useEffect(() => {
+    let token = tokenHandler.searchInCookie("bint");
+    if (token) {
       let decoded = tokenHandler.jwtDecode(token).payload;
       setLoginState({
-        isStateFinalized : true,
-        isLoggedIn : tokenHandler.isTokenValid(decoded.exp),
-        isAdmin : ['admin'].includes(decoded.role.toLowerCase())
-      })
+        isStateFinalized: true,
+        isLoggedIn: tokenHandler.isTokenValid(decoded.exp),
+        isAdmin: ["admin"].includes(decoded.role.toLowerCase()),
+      });
     }
-  }, [loginState.isStateFinalized])
-
- 
+  }, [loginState.isStateFinalized]);
 
   return (
     <div className={`nc-MainNav1 relative z-10 ${className}`}>

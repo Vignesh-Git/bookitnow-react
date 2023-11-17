@@ -21,10 +21,20 @@ const SectionHero: FC<SectionHeroProps> = ({ className = "" }) => {
         uniqueID="sd"
         ratioClass=" h-[620px]"
         autoPlay={3000}
-        componentList={[<SectionHero3 imagePng={sliderImage1} tagLine="Book Your Victory Venue with Ease!"/>, 
-        <SectionHero3 imagePng = {sliderImage2} tagLine="Your Game, Your Venue, Your Victory!" />,
-        <SectionHero3 imagePng = {sliderImage3} tagLine="Score Your Perfect Game Day" />,
-      ]}
+        componentList={[
+          <SectionHero3
+            imagePng={sliderImage1}
+            tagLine="Book Your Victory Venue with Ease!"
+          />,
+          <SectionHero3
+            imagePng={sliderImage2}
+            tagLine="Your Game, Your Venue, Your Victory!"
+          />,
+          <SectionHero3
+            imagePng={sliderImage3}
+            tagLine="Score Your Perfect Game Day"
+          />,
+        ]}
       />
 
       <div className="hidden lg:block z-10 mb-12 lg:mb-0 lg:-mt-40 w-full">

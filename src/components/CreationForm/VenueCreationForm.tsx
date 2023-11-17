@@ -1,104 +1,67 @@
-import { MinusIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import CommonLayout from "containers/PageAddListing1/CommonLayout";
 import FormItem from "containers/PageAddListing1/FormItem";
-import { useFormik } from "formik";
+import { FormikProps } from "formik";
 import Upload from "images/Upload";
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import Checkbox from "shared/Checkbox/Checkbox";
 import Input from "shared/Input/Input";
 import Select from "shared/Select/Select";
 import Textarea from "shared/Textarea/Textarea";
-import * as Yup from "yup";
-function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
+import { FormValues } from "./index";
+function VenueCreationForm({ formik }: { formik: FormikProps<FormValues> }) {
   const days = [
     {
       id: 0,
-      label: "Mon",
+      label: "monday",
     },
     {
       id: 1,
-      label: "Tues",
+      label: "tuesday",
     },
     {
       id: 2,
-      label: "Wed",
+      label: "wednesday",
     },
     {
       id: 3,
-      label: "Thurs",
+      label: "thursday",
     },
     {
       id: 4,
-      label: "Fri",
+      label: "friday",
     },
     {
       id: 5,
-      label: "Sat",
+      label: "saturday",
     },
     {
       id: 6,
-      label: "Sun",
+      label: "sunday",
     },
   ];
   const amenities = [
-    "Parking",
-    "Drinking Water",
-    "Shower",
-    "First Aid",
-    "Change Room",
+    {
+      label: "Parking",
+      id: "parking",
+    },
+    {
+      label: "Drinking Water",
+      id: "drinkingWater",
+    },
+    {
+      label: "Shower",
+      id: "shower",
+    },
+    {
+      label: "First Aid",
+      id: "firstAid",
+    },
+    {
+      label: "Change Room",
+      id: "changeRoom",
+    },
   ];
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    address: Yup.object().shape({
-      street_name: Yup.string().required("Street Name is required"),
-      city: Yup.string().required("City is required"),
-      state: Yup.string().required("State is required"),
-      country: Yup.string().required("Country is required"),
-      pincode: Yup.string().required("Pincode is required"),
-      geo_location: Yup.object().shape({
-        lat: Yup.string().required("Latitude is required"),
-        long: Yup.string().required("Longitude is required"),
-      }),
-    }),
-    hero_image: Yup.string().required("Hero Image is required"),
-    description: Yup.string().required("Description is required").trim(),
-    extra_images: Yup.array()
-      .of(Yup.string())
-      .min(1, "Atleast One Image is required"),
-    amenities: Yup.array()
-      .of(Yup.string())
-
-      .min(1, "Select atleast one amenities"),
-    available_days: Yup.array()
-      .of(Yup.string())
-      .min(1, "Select atleast one available Days"),
-  });
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      address: {
-        street_name: "",
-        city: "",
-        state: "",
-        country: "",
-        pincode: "",
-        geo_location: {
-          lat: "",
-          long: "",
-        },
-      },
-      hero_image: "",
-      description: " ",
-      extra_images: [],
-      amenities: [],
-      available_days: [],
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      onChange(values);
-    },
-  });
 
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -142,6 +105,25 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleCheckboxChange = (day: string) => {
+    // Toggle the selected day in the array
+    formik.setValues((prevValues) => ({
+      ...prevValues,
+      available_days: prevValues.available_days.includes(day)
+        ? prevValues.available_days.filter((d) => d !== day)
+        : [...prevValues.available_days, day],
+    }));
+  };
+  const handleAmenityCheckboxChange = (amentiy: string) => {
+    // Toggle the selected day in the array
+    formik.setValues((prevValues) => ({
+      ...prevValues,
+      amenities: prevValues.amenities.includes(amentiy)
+        ? prevValues.amenities.filter((d) => d !== amentiy)
+        : [...prevValues.amenities, amentiy],
+    }));
   };
 
   return (
@@ -188,13 +170,13 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
         <div className="space-y-8">
           <FormItem label="Country/Region">
             <Select {...formik.getFieldProps("address.country")}>
+              <option value="">...</option>
               <option value="Viet Nam">Viet Nam</option>
               <option value="Thailand">Thailand</option>
               <option value="France">France</option>
               <option value="Singapore">Singapore</option>
               <option value="Jappan">Jappan</option>
               <option value="Korea">Korea</option>
-              <option value="...">...</option>
             </Select>
             {formik.touched.address?.country &&
               formik.errors.address?.country && (
@@ -275,8 +257,8 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
           {days.map((d) => (
             <Checkbox
               label={d.label}
-              {...formik.getFieldProps("available_days")}
-              className="border-[2px] rounded-sm min-w-[92px] text-center px-4 py-2 font-medium text-[#192335] text-[14px]"
+              name={d.label}
+              onChange={(e: any) => handleCheckboxChange(e.target.value)}
             />
           ))}
         </div>
@@ -291,7 +273,11 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
         <div className="w-20 border-b border-neutral-200 dark:border-neutral-700"></div>
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {amenities.map((amenity) => (
-            <Checkbox label={amenity} {...formik.getFieldProps("amenities")} />
+            <Checkbox
+              label={amenity.id}
+              name={amenity.id}
+              onChange={(e: any) => handleAmenityCheckboxChange(e.target.value)}
+            />
           ))}
         </div>
         {formik.touched.amenities && formik.errors.amenities && (
@@ -416,6 +402,88 @@ function VenueCreationForm({ onChange }: { onChange: (e: any) => void }) {
               </div>
             )}
           </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-5 mt-5">
+        <h2 className="text-2xl font-semibold">Social Media Info</h2>
+        <div className="w-20 border-b border-neutral-200 dark:border-neutral-700"></div>
+        <FormItem label="Facebook">
+          <Input
+            {...formik.getFieldProps("social_media?.facebook")}
+            placeholder="..."
+          />
+          {formik.touched.social_media?.facebook &&
+            formik.errors.social_media?.facebook && (
+              <div className="text-red-900 text-[14px]">
+                {formik.errors.social_media?.facebook}
+              </div>
+            )}
+        </FormItem>
+        <FormItem label="Whatsapp">
+          <Input
+            {...formik.getFieldProps("social_media?.whatsapp")}
+            placeholder="..."
+          />
+          {formik.touched.social_media?.whatsapp &&
+            formik.errors.social_media?.whatsapp && (
+              <div className="text-red-900 text-[14px]">
+                {formik.errors.social_media?.whatsapp}
+              </div>
+            )}
+        </FormItem>
+        <FormItem label="Twitter">
+          <Input
+            {...formik.getFieldProps("social_media?.twitter")}
+            placeholder="..."
+          />
+          {formik.touched.social_media?.twitter &&
+            formik.errors.social_media?.twitter && (
+              <div className="text-red-900 text-[14px]">
+                {formik.errors.social_media?.twitter}
+              </div>
+            )}
+        </FormItem>
+        <FormItem label="Instagram">
+          <Input
+            {...formik.getFieldProps("social_media?.instagram")}
+            placeholder="..."
+          />
+          {formik.touched.social_media?.instagram &&
+            formik.errors.social_media?.instagram && (
+              <div className="text-red-900 text-[14px]">
+                {formik.errors.social_media?.instagram}
+              </div>
+            )}
+        </FormItem>
+        <FormItem label="Website">
+          <Input {...formik.getFieldProps("website")} placeholder="..." />
+          {formik.touched.website && formik.errors.website && (
+            <div className="text-red-900 text-[14px]">
+              {formik.errors.website}
+            </div>
+          )}
+        </FormItem>
+        <div className="flex gap-3 items-center">
+          <input
+            type="checkbox"
+            name="enabled"
+            id="enabled"
+            checked={formik.values.enabled}
+            onChange={(e) => formik.setFieldValue("enabled", e.target.checked)}
+          />
+          <label htmlFor="enabled">Enabled</label>
+        </div>
+        <div className="flex gap-3 items-center">
+          <input
+            type="checkbox"
+            name="isFeatured"
+            id="isFeatured"
+            checked={formik.values.is_featured}
+            onChange={(e) =>
+              formik.setFieldValue("is_featured", e.target.checked)
+            }
+          />
+          <label htmlFor="isFeatured">Is Featured</label>
         </div>
       </div>
     </CommonLayout>

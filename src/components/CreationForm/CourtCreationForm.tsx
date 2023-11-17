@@ -1,11 +1,13 @@
 import { MinusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import axios from "axios";
 import TimeInput, { optionsList } from "components/HeroSearchForm/TimeInput";
 import CommonLayout from "containers/PageAddListing1/CommonLayout";
 import FormItem from "containers/PageAddListing1/FormItem";
 import Upload from "images/Upload";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Checkbox from "shared/Checkbox/Checkbox";
 import Input from "shared/Input/Input";
 import NcDropDown from "shared/NcDropDown/NcDropDown";
@@ -20,9 +22,12 @@ function CourtForm({
   showError,
   totalCount,
   onChange,
-  addCustomPrice,
-  onCustomPriceChange,
-  onCustomPriceDelete,
+  onPriceChange,
+  onTimeChange,
+  addOpeningHours,
+  deleteOpeningHours,
+  addPrice,
+  deletePrice,
 }: {
   courtData: any;
   onDelete: () => void;
@@ -30,10 +35,20 @@ function CourtForm({
   showError: boolean;
   totalCount: number;
   onChange: any;
-  addCustomPrice: () => void;
-  onCustomPriceChange: any;
-  onCustomPriceDelete: any;
+  onPriceChange: any;
+  onTimeChange: any;
+  addOpeningHours: any;
+  deleteOpeningHours: any;
+  addPrice: any;
+  deletePrice: any;
 }) {
+  const [option, setOption] = useState([]);
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .then((res) => setOption(res.data))
+      .catch(() => toast.error("Something went wrong!"));
+  }, []);
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -43,20 +58,12 @@ function CourtForm({
       onChange(base64Image, "hero_image");
     }
   };
-  const week = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
+
   const handleMultipleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files;
-    if (files && files.length > 0) {
+    if (files && files?.length > 0) {
       const base64Images = await Promise.all(
         Array.from(files).map(async (file) => {
           const base64Image = await readFileAsBase64(file);
@@ -97,14 +104,22 @@ function CourtForm({
       </div>
       <div className="w-20 border-b border-neutral-200 dark:border-neutral-700"></div>
       <FormItem label="Court Name">
-        <Input
+        <Select
           placeholder="court_name"
           id="court_name"
-          onChange={(e) => onChange(e.target.value, "court_name")}
+          onChange={(e) => {
+            onChange(e.target.value, "court_id");
+          }}
           value={courtData.court_name}
-        />
+        >
+          <option value="">Please select any</option>
+
+          {option.map((opt: any) => (
+            <option value={opt._id}>{opt.name}</option>
+          ))}
+        </Select>
         <p className="text-sm text-[red]">
-          {!courtData.court_name && showError ? "Court Name is Required" : null}
+          {!courtData.court_id && showError ? "Court Name is Required" : null}
         </p>
       </FormItem>
 
@@ -129,11 +144,13 @@ function CourtForm({
           placeholder="..."
           id="desc"
           name="desc"
-          onChange={(e) => onChange(e.target.value, "desc")}
-          value={courtData.desc}
+          onChange={(e) => onChange(e.target.value, "description")}
+          value={courtData.description}
         />
         <p className="text-sm text-[red]">
-          {!courtData.desc && showError ? "Description is Required" : null}
+          {!courtData.description && showError
+            ? "Description is Required"
+            : null}
         </p>
       </FormItem>
 
@@ -149,66 +166,119 @@ function CourtForm({
           {!courtData.policy && showError ? "Policy is Required" : null}
         </p>
       </FormItem>
-      <FormItem label="Default Pricing">
-        <Input
-          placeholder="Eg., $1"
-          type="number"
-          id="default_price"
-          name="default_price"
-          onChange={(e) => onChange(e.target.value, "default_price")}
-          value={courtData.default_price}
-        />
-      </FormItem>
 
-      <FormItem label="Custom Pricing">
-        {courtData.custom_price.map((price: any, idx: number) => (
-          <div className="flex items-center  gap-4 mt-5">
-            <div className="w-full text-sm items-stretch flex rounded-sm border border-neutral-200 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 ">
-              <Select
-                value={price.day}
-                className="border-none w-[30%] rounded-none"
-                onChange={(e) => {
-                  onCustomPriceChange(e.target.value, "day", idx);
-                }}
-              >
-                {week.map((wk) => (
-                  <option label={wk}>{wk}</option>
-                ))}
-              </Select>
-              <div className="w-[1px] bg-neutral-200 dark:bg-neutral-700"></div>
-
-              <Select
-                value={price.slot}
-                className="border-none w-[30%] rounded-none"
-                onChange={(e) => {
-                  onCustomPriceChange(e.target.value, "slot", idx);
-                }}
-              >
-                {optionsList.map((opt) => (
-                  <option label={opt}>{opt}</option>
-                ))}
-              </Select>
-
-              <div className="w-[1px] bg-neutral-200 dark:bg-neutral-700"></div>
-              <Input
-                onChange={(e) => {
-                  onCustomPriceChange(e.target.value, "price", idx);
-                }}
-                value={price.price}
-                className="w-[40%] rounded-none border-none"
-                placeholder="Price"
-              />
+      <FormItem label="Opening Hours">
+        {Object.entries(courtData.opening_hours)?.map((d: any, idx) => {
+          return (
+            <div className="my-3">
+              <p className="mb-3 flex justify-between text-sm">
+                <div>{d[0]}</div>
+                <div
+                  className="text-[blue]"
+                  onClick={() => addOpeningHours(d[0])}
+                >
+                  + Add
+                </div>
+              </p>
+              {d[1].map((data: any, index: number) => (
+                <div className="flex gap-3 mt-2 items-center">
+                  <Input
+                    value={`${String(new Date(data.from).getHours()).padStart(
+                      2,
+                      "0"
+                    )}:${String(new Date(data.from).getMinutes()).padStart(
+                      2,
+                      "0"
+                    )}`}
+                    type="time"
+                    placeholder="From Time"
+                    onChange={(e) => {
+                      onTimeChange(e.target.value, d[0], "from", index);
+                    }}
+                  />
+                  <Input
+                    type="time"
+                    placeholder="To Time"
+                    value={`${String(new Date(data.to).getHours()).padStart(
+                      2,
+                      "0"
+                    )}:${String(new Date(data.to).getMinutes()).padStart(
+                      2,
+                      "0"
+                    )}`}
+                    onChange={(e) =>
+                      onTimeChange(e.target.value, d[0], "to", index)
+                    }
+                  />
+                  <div
+                    className="text-sm text-[red]"
+                    onClick={() => deleteOpeningHours(index, d[0])}
+                  >
+                    Delete
+                  </div>
+                </div>
+              ))}
             </div>
-            <PlusCircleIcon
-              className="w-7 h-7 inline"
-              onClick={addCustomPrice}
-            />
-            <MinusCircleIcon
-              className="w-7 h-7 inline"
-              onClick={() => onCustomPriceDelete(idx)}
-            />
-          </div>
-        ))}
+          );
+        })}
+      </FormItem>
+      <FormItem label="Custom Pricing">
+        {Object.entries(courtData.price).map((d: any, idx) => {
+          console.log(d[1]);
+          return (
+            <div className="my-3">
+              <p className="mb-3 flex justify-between text-sm">
+                <div>{d[0]}</div>
+                <div className="text-[blue]" onClick={() => addPrice(d[0])}>
+                  + Add
+                </div>
+              </p>
+              {d[1].length > 0 &&
+                d[1].map((data: any, index: number) => (
+                  <div className="flex items-center gap-3 mt-3 ">
+                    <Input
+                      value={`${String(
+                        new Date(data.time_from).getHours()
+                      ).padStart(2, "0")}:${String(
+                        new Date(data.time_from).getMinutes()
+                      ).padStart(2, "0")}`}
+                      type="time"
+                      placeholder="From Time"
+                      onChange={(e) =>
+                        onPriceChange(e.target.value, d[0], "time_from", index)
+                      }
+                    />
+                    <Input
+                      type="time"
+                      placeholder="To Time"
+                      value={`${String(
+                        new Date(data.time_to).getHours()
+                      ).padStart(2, "0")}:${String(
+                        new Date(data.time_to).getMinutes()
+                      ).padStart(2, "0")}`}
+                      onChange={(e) =>
+                        onPriceChange(e.target.value, d[0], "time_to", index)
+                      }
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Price"
+                      value={data.amount}
+                      onChange={(e) =>
+                        onPriceChange(e.target.value, d[0], "amount", index)
+                      }
+                    />
+                    <p
+                      className="text-sm text-[red]"
+                      onClick={() => deletePrice(index, d[0])}
+                    >
+                      Delete
+                    </p>
+                  </div>
+                ))}
+            </div>
+          );
+        })}
       </FormItem>
 
       <div className="flex flex-col gap-5 mt-5">
@@ -286,7 +356,7 @@ function CourtForm({
                   </div>
                 </div>
               </div>
-              {courtData.gallery_image.length > 0 && (
+              {courtData.gallery_image?.length > 0 && (
                 <div className="mt-3">
                   <div className="text-md font-semibold">Preview</div>
                   <div className="flex gap-10">
@@ -310,7 +380,7 @@ function CourtForm({
                 </div>
               )}
               <p className="text-sm text-[red]">
-                {!(courtData.gallery_image.length > 0 && showError)
+                {!(courtData.gallery_image?.length > 0 && showError)
                   ? null
                   : "Atleast one image is Required"}
               </p>
@@ -318,41 +388,73 @@ function CourtForm({
           </div>
         </div>
       </div>
+      <FormItem>
+        <input
+          name="enable"
+          id="enable"
+          checked={courtData.enabled}
+          type="checkbox"
+          onChange={(e) => onChange(e.target.checked, "enabled")}
+        />
+        <label htmlFor="enable" className="ml-4">
+          Enable
+        </label>
+      </FormItem>
     </div>
   );
 }
 
-function CourtCreationForm({ onSubmit }: { onSubmit: any }) {
-  const navigate = useNavigate();
-  const [courts, setCourts] = React.useState<any>([
-    // Initial court data
-    {
-      court_name: "",
-      number_of_courts: "",
-      desc: "",
-      policy: "",
-      hero_image: "",
-      gallery_image: [],
-      default_price: "",
-      custom_price: [
-        { day: "", slot: "", price: "" },
-        { day: "", slot: "", price: "" },
-      ],
-    },
-  ]);
-
+function CourtCreationForm({
+  courts,
+  setCourts,
+  onSubmit,
+  onBack,
+}: {
+  onSubmit: any;
+  onBack: any;
+  courts: any;
+  setCourts: any;
+}) {
   const handleAddCourt = () => {
     setCourts([
       ...courts,
       {
-        court_name: "",
+        court_id: "",
         number_of_courts: "",
-        desc: "",
+        description: "",
         policy: "",
         hero_image: "",
         gallery_image: [],
-        default_price: "",
-        custom_price: [{ day: "", slot: "", price: "" }],
+        opening_hours: {
+          monday: [
+            {
+              from: "",
+              to: "",
+            },
+          ],
+          tuesday: [],
+          wednesday: [],
+          thursday: [],
+          friday: [],
+          saturday: [],
+          sunday: [],
+        },
+        price: {
+          monday: [
+            {
+              time_from: "",
+              time_to: "",
+              amount: "",
+            },
+          ],
+          tuesday: [],
+          wednesday: [],
+          thursday: [],
+          friday: [],
+          saturday: [],
+          sunday: [],
+        },
+        enabled: true,
       },
     ]);
   };
@@ -368,11 +470,10 @@ function CourtCreationForm({ onSubmit }: { onSubmit: any }) {
   return (
     <CommonLayout
       index="02"
-      backBtnOnClick={() => navigate("/create/venue")}
+      backBtnOnClick={onBack}
       nextBtnText="Submit"
       NextBtnOnClick={() => {
         setShowError(true);
-        console.log(courts);
         onSubmit(courts);
       }}
     >
@@ -388,23 +489,79 @@ function CourtCreationForm({ onSubmit }: { onSubmit: any }) {
             courtData={court}
             onDelete={() => handleDeleteCourt(index)}
             courtNo={index + 1}
-            totalCount={courts.length}
+            totalCount={courts?.length}
             onChange={(value: any, name: any) => {
               courts[index][name] = value;
               setCourts([...courts]);
             }}
-            addCustomPrice={() => {
-              court.custom_price.push({ day: "", slot: "", price: "" });
-              setCourts([...courts]);
-            }}
             showError={showError}
-            onCustomPriceChange={(value: string, name: string, idx: number) => {
-              courts[index].custom_price[idx][name] = value;
-              setCourts([...courts]);
+            onPriceChange={(
+              value: string,
+              idx: string,
+              name: string,
+              number: number
+            ) =>
+              setCourts((prev: any) => {
+                if (value.includes(":")) {
+                  const currentDate = new Date();
+
+                  const [hours, minutes] = value.split(":");
+
+                  currentDate.setHours(Number(hours), Number(minutes));
+                  prev[index].price[idx][number][name] = currentDate;
+                  return [...prev];
+                } else {
+                  prev[index].price[idx][number][name] = value;
+                  return [...prev];
+                }
+              })
+            }
+            onTimeChange={(
+              value: string,
+              idx: string,
+              name: string,
+              number: number
+            ) =>
+              setCourts((prev: any) => {
+                const currentDate = new Date();
+
+                const [hours, minutes] = value.split(":");
+
+                currentDate.setHours(Number(hours), Number(minutes));
+                prev[index].opening_hours[idx][number][name] = currentDate;
+                return [...prev];
+              })
+            }
+            addOpeningHours={(e: any) =>
+              setCourts((prev: any) => {
+                prev[index].opening_hours[e].push({
+                  from: "",
+                  to: "",
+                });
+                return [...prev];
+              })
+            }
+            deleteOpeningHours={(idx: number, name: string) => {
+              setCourts((prev: any) => {
+                prev[index].opening_hours[name].splice(idx, 1);
+                return [...prev];
+              });
             }}
-            onCustomPriceDelete={(idx: number) => {
-              courts[index].custom_price.splice(idx, 1);
-              setCourts([...courts]);
+            addPrice={(e: any) => {
+              setCourts((prev: any) => {
+                prev[index].price[e].push({
+                  time_from: "",
+                  time_to: "",
+                  amount: "",
+                });
+                return [...prev];
+              });
+            }}
+            deletePrice={(idx: number, name: string) => {
+              setCourts((prev: any) => {
+                prev[index].price[name].splice(idx, 1);
+                return [...prev];
+              });
             }}
           />
         </div>

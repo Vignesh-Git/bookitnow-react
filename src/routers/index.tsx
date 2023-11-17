@@ -48,7 +48,9 @@ import ListingCarDetailPage from "containers/ListingDetailPage/listing-car-detai
 import ListingExperiencesDetailPage from "containers/ListingDetailPage/listing-experiences-detail/ListingExperiencesDetailPage";
 import CreationForm from "components/CreationForm";
 import ManageBooking from "components/ManageBooking";
-
+import CourtCreation from "components/CourtCreation";
+import CourtListing from "components/Court";
+import Admin from "components/Admin";
 export const pages: Page[] = [
   { path: "/", exact: true, component: PageHome },
   { path: "/#", exact: true, component: PageHome },
@@ -110,8 +112,14 @@ export const pages: Page[] = [
   { path: "/signup", component: PageSignUp },
   { path: "/login", component: PageLogin },
   { path: "/subscription", component: PageSubcription },
+  { path: "/create/court", component: CourtCreation },
   { path: "/create", component: CreationForm },
   { path: "/booking", component: ManageBooking },
+  { path: "/admin/console", component: Admin },
+  {
+    path: "/court",
+    component: CourtListing,
+  },
 ];
 
 const MyRoutes = () => {

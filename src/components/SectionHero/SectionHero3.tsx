@@ -1,14 +1,17 @@
 import React, { FC } from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 
-
 export interface SectionHero3Props {
   className?: string;
   imagePng?: string;
   tagLine?: string;
 }
 
-const SectionHero3: FC<SectionHero3Props> = ({ className = "", imagePng, tagLine }) => {
+const SectionHero3: FC<SectionHero3Props> = ({
+  className = "",
+  imagePng,
+  tagLine,
+}) => {
   return (
     <div
       className={`nc-SectionHero3 relative ${className}`}
