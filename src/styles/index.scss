@@ -6,3 +6,7 @@
 @import "./header";
 
 @import "node_modules/@glidejs/glide/src/assets/sass/glide.core";
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: contrast(100%) sepia();
+}

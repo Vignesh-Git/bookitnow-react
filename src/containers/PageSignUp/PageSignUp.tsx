@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useState } from "react";
+import React, { FC, FormEvent, useEffect, useState } from "react";
 import facebookSvg from "images/Facebook.svg";
 import twitterSvg from "images/Twitter.svg";
 import googleSvg from "images/Google.svg";
@@ -6,17 +6,15 @@ import { Helmet } from "react-helmet";
 import Input from "shared/Input/Input";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import { Link } from "react-router-dom";
-import axios, { isCancel, AxiosError } from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import axios, { isCancel, AxiosError } from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import tokenHandler from "utils/tokenHandler";
-import { useNavigate  } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export interface PageSignUpProps {
   className?: string;
 }
-
-
 
 const loginSocials = [
   {
@@ -36,42 +34,65 @@ const loginSocials = [
   },
 ];
 
-
-
 const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
-
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     let email = e.target[0].value;
     let password = e.target[1].value;
-    axios.post(`${process.env.REACT_APP_API_DOMAIN}/api/user/signup`, {
-      email, password
-    }).then((response) => {
-      axios.post(`${process.env.REACT_APP_API_DOMAIN}/api/user/login`, {
-        email, password
-      }).then((response) => {
-        setIsLoading(false)
-        tokenHandler.setToCookie('bint', response.data.token)
-        navigate("/");
-        window.location.reload()
-      }).catch((err) => {
-        setIsLoading(false)
+    axios
+      .post(`${process.env.REACT_APP_API_DOMAIN}/api/user/signup`, {
+        email,
+        password,
+      })
+      .then((response) => {
+        axios
+          .post(`${process.env.REACT_APP_API_DOMAIN}/api/user/login`, {
+            email,
+            password,
+          })
+          .then((response) => {
+            setIsLoading(false);
+            tokenHandler.setToCookie("bint", response.data.token);
+            navigate("/");
+            window.location.reload();
+          })
+          .catch((err) => {
+            setIsLoading(false);
+            toast.error("Something went wrong!", {
+              position: toast.POSITION.TOP_RIGHT,
+            });
+          });
+      })
+      .catch((err) => {
+        setIsLoading(false);
         toast.error("Something went wrong!", {
-          position: toast.POSITION.TOP_RIGHT
-        })
-      })
-    }).catch((err) => {
-      setIsLoading(false)
-      toast.error("Something went wrong!", {
-        position: toast.POSITION.TOP_CENTER
-      })
-    })
-  }
+          position: toast.POSITION.TOP_CENTER,
+        });
+      });
+  };
+  const [loginState, setLoginState] = useState({
+    isStateFinalized: false,
+    isLoggedIn: false,
+    isAdmin: false,
+  });
 
+  useEffect(() => {
+    let token = tokenHandler.searchInCookie("bint");
+    if (token) {
+      let decoded = tokenHandler.jwtDecode(token).payload;
+      tokenHandler.isTokenValid(decoded.exp) && navigate("/account");
+
+      setLoginState({
+        isStateFinalized: true,
+        isLoggedIn: tokenHandler.isTokenValid(decoded.exp),
+        isAdmin: ["admin"].includes(decoded.role.toLowerCase()),
+      });
+    }
+  }, [loginState.isStateFinalized]);
 
   return (
     <div className={`nc-PageSignUp  ${className}`} data-nc-id="PageSignUp">
@@ -109,7 +130,12 @@ const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
             <div className="absolute left-0 w-full top-1/2 transform -translate-y-1/2 border border-neutral-100 dark:border-neutral-800"></div>
           </div>
           {/* FORM */}
-          <form className="grid grid-cols-1 gap-6" onSubmit={(e) => { handleSubmit(e) }}>
+          <form
+            className="grid grid-cols-1 gap-6"
+            onSubmit={(e) => {
+              handleSubmit(e);
+            }}
+          >
             <label className="block">
               <span className="text-neutral-800 dark:text-neutral-200">
                 Email address
@@ -126,7 +152,9 @@ const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
               </span>
               <Input type="password" className="mt-1" />
             </label>
-            <ButtonPrimary type="submit" loading={isLoading}>Continue</ButtonPrimary>
+            <ButtonPrimary type="submit" loading={isLoading}>
+              Continue
+            </ButtonPrimary>
           </form>
 
           {/* ==== */}

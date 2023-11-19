@@ -23,16 +23,13 @@ const FeaturedVenueCard: FC<StayCardProps> = ({
   className = "",
   data = DEMO_DATA,
 }) => {
-
-  
-
   const renderSliderGallery = () => {
     return (
       <div className="relative w-full">
         <GallerySlider
           uniqueID={`StayCard_${data._id}`}
           ratioClass="aspect-w-4 aspect-h-3 "
-          galleryImgs={[data.hero_image, ...data.extra_images]}
+          galleryImgs={[data.hero_image, ...data?.extra_images]}
           // href={href}
         />
         {/* <BtnLikeIcon isLiked={like} className="absolute right-3 top-3 z-[1]" /> */}

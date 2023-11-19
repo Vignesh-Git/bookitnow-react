@@ -236,7 +236,7 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
         <div className="flex flex-1 rounded-full">
           <LocationInput
             value={data.location}
-            placeHolder="Venue"
+            placeHolder="Location"
             desc="Where do you want to play?"
             className="flex-1"
             onchange={(e) => setData((prev) => ({ ...prev, location: e }))}

@@ -22,7 +22,7 @@ function Venue() {
   return (
     <div className="w-full">
       <div className="flex justify-end">
-        <ButtonSecondary href={"/create"} className="flex justify-end">
+        <ButtonSecondary href={"/venue/create"} className="flex justify-end">
           Add Venue
         </ButtonSecondary>
       </div>

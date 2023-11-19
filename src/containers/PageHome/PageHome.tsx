@@ -1,6 +1,6 @@
 import SectionHero from "components/SectionHero/SectionHero";
 import SectionSliderNewCategories from "components/SectionSliderNewCategories/SectionSliderNewCategories";
-import React from "react";
+import React, { useEffect } from "react";
 import SectionSubscribe2 from "components/SectionSubscribe2/SectionSubscribe2";
 import SectionOurFeatures from "components/SectionOurFeatures/SectionOurFeatures";
 import SectionGridFeaturePlaces from "./SectionGridFeaturePlaces";
@@ -132,7 +132,7 @@ function PageHome() {
 
         <div className="relative py-16">
           <BackgroundSection />
-          <ResultGridFeature heading="Filtered Venues" />
+          {/* <ResultGridFeature heading="Filtered Venues" /> */}
           <div className="my-10">
             <SectionGridFeaturePlaces />
           </div>

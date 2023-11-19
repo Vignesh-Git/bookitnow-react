@@ -211,7 +211,7 @@ const CourtCard: FC<StayCardProps> = ({
 
                 <img
                   src={formik.values.hero_image}
-                  className="w-full h-[230px]"
+                  className="w-[210px]"
                   alt="Preview"
                 />
               </div>

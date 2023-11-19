@@ -3,6 +3,8 @@
 import { ClockIcon, MapPinIcon, TrophyIcon } from "@heroicons/react/24/outline";
 import React, { useState, useRef, useEffect, FC } from "react";
 import ClearDataButton from "./ClearDataButton";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export interface LocationInputProps {
   placeHolder?: string;
@@ -64,7 +66,22 @@ const SportInput: FC<LocationInputProps> = ({
     setShowPopover(false);
   };
 
-  const optionsList = ["Badminton", "Foodball", "Soccer"];
+  // const optionsList = ["Badminton", "Foodball", "Soccer"];
+
+  const [optionsList, setOptionList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .then((response) => {
+        setOptionList(response.data.map((d: any) => d.name));
+      })
+      .catch((e) => {
+        toast.error("Something went wrong!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  }, []);
 
   const renderRecentSearches = () => {
     return (

@@ -9,6 +9,8 @@ import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 function CourtCreation() {
   const validationSchema = Yup.object().shape({
@@ -61,6 +63,7 @@ function CourtCreation() {
           position: toast.POSITION.TOP_RIGHT,
         });
         formik.resetForm();
+        navigate("/admin/console");
       })
       .catch(() =>
         toast.error("Something went wrong!", {
@@ -68,10 +71,16 @@ function CourtCreation() {
         })
       );
   };
-
+  const navigate = useNavigate();
   return (
     <div className="max-w-5xl my-5 mx-auto">
-      <h2 className="text-2xl font-semibold">Court Creation</h2>
+      <div className="flex gap-3">
+        <ChevronLeftIcon
+          className="w-8 h-8 cursor-pointer"
+          onClick={() => navigate("/admin/console")}
+        />
+        <h2 className="text-2xl font-semibold">Court Creation</h2>
+      </div>
       <div className="w-20 border-b border-neutral-200 my-5 dark:border-neutral-700"></div>
       <FormItem
         label="Court Name"
@@ -141,7 +150,7 @@ function CourtCreation() {
 
             <img
               src={formik.values.hero_image}
-              className="w-full"
+              className="w-[210px]"
               alt="Preview"
             />
           </div>

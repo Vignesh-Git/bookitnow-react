@@ -176,7 +176,7 @@ function CourtForm({
                   <p className="mb-3 flex justify-between text-sm">
                     <div>{d[0]}</div>
                     <div
-                      className="text-[blue]"
+                      className="text-[blue] cursor-pointer"
                       onClick={() => addOpeningHours(d[0])}
                     >
                       + Add
@@ -211,10 +211,10 @@ function CourtForm({
                         }
                       />
                       <div
-                        className="text-sm text-[red]"
+                        className="text-sm text-[red] cursor-pointer"
                         onClick={() => deleteOpeningHours(index, d[0])}
                       >
-                        Delete
+                        <MinusCircleIcon className="w-6 h-6 " />
                       </div>
                     </div>
                   ))}
@@ -233,7 +233,10 @@ function CourtForm({
                 <div className="my-3">
                   <p className="mb-3 flex justify-between text-sm">
                     <div>{d[0]}</div>
-                    <div className="text-[blue]" onClick={() => addPrice(d[0])}>
+                    <div
+                      className="text-[blue] cursor-pointer"
+                      onClick={() => addPrice(d[0])}
+                    >
                       + Add
                     </div>
                   </p>
@@ -283,10 +286,10 @@ function CourtForm({
                           }
                         />
                         <p
-                          className="text-sm text-[red]"
+                          className="text-sm text-[red] cursor-pointer"
                           onClick={() => deletePrice(index, d[0])}
                         >
-                          Delete
+                          <MinusCircleIcon className="w-6 h-6 " />
                         </p>
                       </div>
                     ))}
@@ -330,7 +333,7 @@ function CourtForm({
               {courtData.hero_image && (
                 <div className="mt-3">
                   <div className="text-md font-semibold">Preview</div>
-                  <img src={courtData.hero_image} className="w-full" />
+                  <img src={courtData.hero_image} className="w-[120px]" />
                 </div>
               )}
               <p className="text-sm text-[red]">
@@ -410,6 +413,7 @@ function CourtForm({
           id="enable"
           checked={courtData.enabled}
           type="checkbox"
+          className="focus:ring-action-primary h-6 w-6 text-primary-500 border-primary rounded border-neutral-500 bg-white dark:bg-neutral-700  dark:checked:bg-primary-500 focus:ring-primary-500"
           onChange={(e) => onChange(e.target.checked, "enabled")}
         />
         <label htmlFor="enable" className="ml-4">
@@ -495,7 +499,7 @@ function CourtCreationForm({
     >
       <span
         onClick={handleAddCourt}
-        className="text-right font-medium text-[16px] cursor-pointer text-primary-700 hover:text-primary-6000"
+        className="text-right font-medium text-[16px] cursor-pointer text-primary-700 hover:text-primary-6000 cursor-pointer"
       >
         + Add Court
       </span>

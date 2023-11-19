@@ -36,6 +36,25 @@ const loginSocials = [
 const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [loginState, setLoginState] = useState({
+    isStateFinalized: false,
+    isLoggedIn: false,
+    isAdmin: false,
+  });
+
+  useEffect(() => {
+    let token = tokenHandler.searchInCookie("bint");
+    if (token) {
+      let decoded = tokenHandler.jwtDecode(token).payload;
+      tokenHandler.isTokenValid(decoded.exp) && navigate("/account");
+
+      setLoginState({
+        isStateFinalized: true,
+        isLoggedIn: tokenHandler.isTokenValid(decoded.exp),
+        isAdmin: ["admin"].includes(decoded.role.toLowerCase()),
+      });
+    }
+  }, [loginState.isStateFinalized]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -61,12 +80,6 @@ const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
         });
       });
   };
-
-  useEffect(() => {
-    if (document.cookie.split("=")[1]) {
-      navigate("/account");
-    }
-  }, []);
 
   return (
     <div className={`nc-PageLogin ${className}`} data-nc-id="PageLogin">

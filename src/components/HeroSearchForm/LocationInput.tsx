@@ -69,15 +69,16 @@ const LocationInput: FC<LocationInputProps> = ({
   const [data, setData] = useState<
     {
       city: string;
-      country: string;
-      _id: string;
+      state: string;
     }[]
   >([]);
+
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/get_all`)
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/get_locations`)
       .then((response) => {
-        setData(response.data.map((d: any) => d.address));
+        setData(response.data[0].location);
+        console.log(response.data);
       })
       .catch((e) => {
         toast.error("Something went wrong!", {
@@ -96,17 +97,17 @@ const LocationInput: FC<LocationInputProps> = ({
           {data.map((item) => (
             <span
               onClick={() => {
-                handleSelectLocation(`${item.city}, ${item.country}`);
-                onchange && onchange(`${item.city}, ${item.country}`);
+                handleSelectLocation(`${item.city}, ${item.state}`);
+                onchange && onchange(`${item.city}, ${item.state}`);
               }}
-              key={item._id}
+              key={item.city}
               className="flex px-4 sm:px-8 items-center space-x-3 sm:space-x-4 py-4 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
             >
               <span className="block text-neutral-400">
                 <ClockIcon className="h-4 sm:h-6 w-4 sm:w-6" />
               </span>
               <span className=" block font-medium text-neutral-700 dark:text-neutral-200">
-                {`${item.city}, ${item.country}`}
+                {`${item.city}, ${item.state}`}
               </span>
             </span>
           ))}

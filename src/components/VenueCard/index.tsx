@@ -57,7 +57,9 @@ const VenueCard: FC<StayCardProps> = ({ data, callBack }) => {
           <ButtonSecondary onClick={() => data?._id && handleDelete(data?._id)}>
             Delete
           </ButtonSecondary>
-          <ButtonPrimary href={`/create?id=${data?._id}`}>Edit</ButtonPrimary>
+          <ButtonPrimary href={`/venue/create?id=${data?._id}`}>
+            Edit
+          </ButtonPrimary>
         </div>
       </div>
     );

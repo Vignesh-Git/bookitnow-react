@@ -19,7 +19,7 @@ function CourtListing() {
   return (
     <div className="w-full">
       <div className="flex justify-end">
-        <ButtonSecondary href={"/create/court"} className="flex justify-end">
+        <ButtonSecondary href={"/court/create"} className="flex justify-end">
           Add Court
         </ButtonSecondary>
       </div>

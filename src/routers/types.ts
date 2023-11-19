@@ -63,6 +63,8 @@ export interface LocationStates {
   "/court": {};
   "/admin/console": {};
   "/filtered-venue": {};
+  "/court/create": {};
+  "/venue/create": {};
 }
 
 export type PathName = keyof LocationStates;

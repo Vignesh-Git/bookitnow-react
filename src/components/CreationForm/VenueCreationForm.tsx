@@ -169,19 +169,15 @@ function VenueCreationForm({ formik }: { formik: FormikProps<FormValues> }) {
         <div className="w-20 border-b border-neutral-200 dark:border-neutral-700"></div>
         <div className="space-y-8">
           <FormItem label="Country/Region">
-            <Select {...formik.getFieldProps("address.country")}>
-              <option value="">...</option>
-              <option value="Viet Nam">Viet Nam</option>
-              <option value="Thailand">Thailand</option>
-              <option value="France">France</option>
-              <option value="Singapore">Singapore</option>
-              <option value="Jappan">Jappan</option>
-              <option value="Korea">Korea</option>
-            </Select>
+            <Input
+              {...formik.getFieldProps("address.country")}
+              placeholder="Country/Region"
+            />
+
             {formik.touched.address?.country &&
               formik.errors.address?.country && (
                 <div className="text-red-900 text-[14px]">
-                  {formik.errors.name}
+                  {formik.errors.address.country}
                 </div>
               )}
           </FormItem>
@@ -338,7 +334,7 @@ function VenueCreationForm({ formik }: { formik: FormikProps<FormValues> }) {
 
                 <img
                   src={formik.values.hero_image}
-                  className="w-full"
+                  className="w-[210px] "
                   alt="Preview"
                 />
               </div>
@@ -472,6 +468,7 @@ function VenueCreationForm({ formik }: { formik: FormikProps<FormValues> }) {
             type="checkbox"
             name="enabled"
             id="enabled"
+            className="focus:ring-action-primary h-6 w-6 text-primary-500 border-primary rounded border-neutral-500 bg-white dark:bg-neutral-700  dark:checked:bg-primary-500 focus:ring-primary-500"
             checked={formik.values.enabled}
             onChange={(e) => formik.setFieldValue("enabled", e.target.checked)}
           />
@@ -482,6 +479,7 @@ function VenueCreationForm({ formik }: { formik: FormikProps<FormValues> }) {
             type="checkbox"
             name="isFeatured"
             id="isFeatured"
+            className="focus:ring-action-primary h-6 w-6 text-primary-500 border-primary rounded border-neutral-500 bg-white dark:bg-neutral-700  dark:checked:bg-primary-500 focus:ring-primary-500"
             checked={formik.values.is_featured}
             onChange={(e) =>
               formik.setFieldValue("is_featured", e.target.checked)

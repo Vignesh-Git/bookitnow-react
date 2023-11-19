@@ -12,46 +12,40 @@ export interface WidgetFooterMenu {
 const widgetMenus: WidgetFooterMenu[] = [
   {
     id: "5",
-    title: "Getting started",
+    title: "Home",
     menus: [
-      { href: "#", label: "Installation" },
-      { href: "#", label: "Release Notes" },
-      { href: "#", label: "Upgrade Guide" },
-      { href: "#", label: "Browser Support" },
-      { href: "#", label: "Editor Support" },
+      { href: "#", label: "Courtsite Platform" },
+      { href: "#", label: "Courtsite for Business" },
     ],
   },
   {
     id: "1",
-    title: "Explore",
+    title: "About Us",
     menus: [
-      { href: "#", label: "Design features" },
-      { href: "#", label: "Prototyping" },
-      { href: "#", label: "Design systems" },
-      { href: "#", label: "Pricing" },
-      { href: "#", label: "Security" },
+      { href: "#", label: "About Us" },
+      { href: "#", label: "Our Blog" },
+      { href: "#", label: "Like Courtsite? Refer a centre to us!" },
+      { href: "#", label: "Careers" },
     ],
   },
   {
     id: "2",
-    title: "Resources",
+    title: "HELP CENTRE",
     menus: [
-      { href: "#", label: "Best practices" },
-      { href: "#", label: "Support" },
-      { href: "#", label: "Developers" },
-      { href: "#", label: "Learn design" },
-      { href: "#", label: "Releases" },
+      { href: "#", label: "Frequently Asked Questions (FAQs)" },
+      { href: "#", label: "Terms of Use" },
+      { href: "#", label: "Privacy Policy" },
+      { href: "#", label: "Contact Us" },
     ],
   },
   {
     id: "4",
-    title: "Community",
+    title: "OUR PARTNER CENTRES",
     menus: [
-      { href: "#", label: "Discussion Forums" },
-      { href: "#", label: "Code of Conduct" },
-      { href: "#", label: "Community Resources" },
-      { href: "#", label: "Contributing" },
-      { href: "#", label: "Concurrent Mode" },
+      { href: "#", label: "Forum Optimum Badminton Centre" },
+      { href: "#", label: "X Park PJ South" },
+      { href: "#", label: "Sportizza - Home of Sports Petaling Jaya" },
+      { href: "#", label: "and more..." },
     ],
   },
 ];
@@ -81,17 +75,19 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <div className="nc-Footer relative py-24 lg:py-28 border-t border-neutral-200 dark:border-neutral-700">
+    <div className="nc-Footer relative py-12 lg:py-16 border-t border-neutral-200 dark:border-neutral-700">
       <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10 ">
-        <div className="grid grid-cols-4 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col">
-          <div className="col-span-2 md:col-span-1">
-            <Logo />
-          </div>
-          <div className="col-span-2 flex items-center md:col-span-3">
-            <SocialsList1 className="flex items-center space-x-3 lg:space-x-0 lg:flex-col lg:space-y-2.5 lg:items-start" />
-          </div>
-        </div>
+        {/* <div className="grid grid-cols-4 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col"></div> */}
         {widgetMenus.map(renderWidgetMenuItem)}
+      </div>
+      <div className="container h-[1px] bg-[#374151] my-8"></div>
+      <div className="container flex items-center justify-between">
+        <div>
+          <Logo />
+        </div>
+        <div>
+          <SocialsList1 className="flex items-center space-x-3  " />
+        </div>
       </div>
     </div>
   );

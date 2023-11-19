@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 export interface FormValues {
   name: string;
   website: string;
@@ -42,7 +43,7 @@ function CreationForm() {
   const [count, setCount] = useState(1);
 
   useEffect(() => {
-    queryParams.get("id") &&
+    if (queryParams.get("id")) {
       axios
         .get(
           `${process.env.REACT_APP_API_DOMAIN}/api/venue/${queryParams.get(
@@ -95,6 +96,9 @@ function CreationForm() {
           setCourts(res.data.courts);
         })
         .catch(() => toast.error("Something went wrong"));
+    } else {
+      setCourts(data.courts);
+    }
   }, [queryParams.get("id")]);
 
   const [data, setData] = useState<any>({
