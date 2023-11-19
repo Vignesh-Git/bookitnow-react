@@ -29,7 +29,7 @@ function Venue() {
       {data.length === 0 ? (
         <div className="h-[360px] flex items-center">
           <h1 className=" text-neutral-900 font-semibold text-center w-full text-xl dark:text-neutral-100 ">
-            No Court Found
+            No Venue Found
           </h1>
         </div>
       ) : (

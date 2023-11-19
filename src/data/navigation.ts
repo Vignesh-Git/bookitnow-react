@@ -213,7 +213,7 @@ export const NAVIGATION_DEMO: NavItemType[] = [
   {
     id: ncNanoId(),
     href: "/",
-    name: "Courtsite for Business",
+    name: "Bookitnow for Business",
     // type: "none",
     // children: demoChildMenus,
     isNew: true,

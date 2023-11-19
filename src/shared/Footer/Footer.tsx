@@ -14,8 +14,8 @@ const widgetMenus: WidgetFooterMenu[] = [
     id: "5",
     title: "Home",
     menus: [
-      { href: "#", label: "Courtsite Platform" },
-      { href: "#", label: "Courtsite for Business" },
+      { href: "#", label: "Bookitnow Platform" },
+      { href: "#", label: "Bookitnow for Business" },
     ],
   },
   {
@@ -24,7 +24,7 @@ const widgetMenus: WidgetFooterMenu[] = [
     menus: [
       { href: "#", label: "About Us" },
       { href: "#", label: "Our Blog" },
-      { href: "#", label: "Like Courtsite? Refer a centre to us!" },
+      { href: "#", label: "Like Bookitnow? Refer a centre to us!" },
       { href: "#", label: "Careers" },
     ],
   },
@@ -42,9 +42,9 @@ const widgetMenus: WidgetFooterMenu[] = [
     id: "4",
     title: "OUR PARTNER CENTRES",
     menus: [
-      { href: "#", label: "Forum Optimum Badminton Centre" },
-      { href: "#", label: "X Park PJ South" },
-      { href: "#", label: "Sportizza - Home of Sports Petaling Jaya" },
+      { href: "#", label: "Andalas Sports Complex" },
+      { href: "#", label: "Dewan Serbaguna Bandar Puchong" },
+      { href: "#", label: "Oncidium Hall" },
       { href: "#", label: "and more..." },
     ],
   },

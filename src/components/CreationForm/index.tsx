@@ -211,10 +211,13 @@ function CreationForm() {
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       country: Yup.string().required("Country is required"),
-      pincode: Yup.string().required("Pincode is required"),
+      pincode: Yup.string()
+        .required("Pincode is required")
+        .matches(/^\d{6}$/, "Invalid pin code. It must be a 6-digit number."),
+
       geo_location: Yup.object().shape({
-        lat: Yup.string().required("Latitude is required"),
-        long: Yup.string().required("Longitude is required"),
+        lat: Yup.number().required("Latitude is required"),
+        long: Yup.number().required("Longitude is required"),
       }),
     }),
     hero_image: Yup.string().required("Hero Image is required"),
