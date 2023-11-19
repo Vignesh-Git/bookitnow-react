@@ -1,12 +1,13 @@
 import CourtListing from "components/Court";
+import ManageBooking from "components/ManageBooking";
 import Venue from "components/Venue";
 import React, { useState } from "react";
 import Nav from "shared/Nav/Nav";
 import NavItem from "shared/NavItem/NavItem";
 
 function Admin() {
-  const tabs = ["Court", "Venue"];
-  const [tabActiveState, setTabActiveState] = useState("Court");
+  const tabs = ["Manage Booking", "Court", "Venue"];
+  const [tabActiveState, setTabActiveState] = useState("Manage Booking");
   return (
     <div className="max-w-7xl m-auto p-3">
       <h2 className={`text-3xl md:text-4xl my-5 font-semibold`}>
@@ -27,7 +28,13 @@ function Admin() {
           </NavItem>
         ))}
       </Nav>
-      {tabActiveState === "Court" ? <CourtListing /> : <Venue />}
+      {tabActiveState === "Manage Booking" ? (
+        <ManageBooking />
+      ) : tabActiveState === "Court" ? (
+        <CourtListing />
+      ) : (
+        <Venue />
+      )}
     </div>
   );
 }

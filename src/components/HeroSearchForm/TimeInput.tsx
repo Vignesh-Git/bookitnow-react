@@ -13,6 +13,7 @@ export interface LocationInputProps {
   padding?: string;
   isShow?: string;
   onChange?: (a: string) => void;
+  value?: string;
 }
 export const optionsList = [
   "7:00 AM",
@@ -69,6 +70,7 @@ const TimeInput: FC<LocationInputProps> = ({
   autoFocus = false,
   placeHolder = "Location",
   desc = "Where are you going?",
+  value,
   isShow,
   onChange,
   className = "nc-flex-1.5",
@@ -78,7 +80,6 @@ const TimeInput: FC<LocationInputProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [value, setValue] = useState("");
   const [showPopover, setShowPopover] = useState(autoFocus);
 
   useEffect(() => {
@@ -113,7 +114,7 @@ const TimeInput: FC<LocationInputProps> = ({
   };
 
   const handleSelectLocation = (item: string) => {
-    setValue(item);
+    onChange && onChange(item);
     setShowPopover(false);
   };
 
@@ -183,7 +184,7 @@ const TimeInput: FC<LocationInputProps> = ({
             value={value}
             autoFocus={showPopover}
             onChange={(e: any) => {
-              setValue(e.currentTarget.value);
+              onChange && onChange(e.currentTarget.value);
             }}
             ref={inputRef}
           />
@@ -193,7 +194,7 @@ const TimeInput: FC<LocationInputProps> = ({
           {value && showPopover && (
             <ClearDataButton
               onClick={() => {
-                setValue("");
+                onChange && onChange("");
               }}
             />
           )}

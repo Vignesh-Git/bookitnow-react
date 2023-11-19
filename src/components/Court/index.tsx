@@ -30,7 +30,7 @@ function CourtListing() {
           </h1>
         </div>
       ) : (
-        <div className="grid mt-4 lg:grid-cols-4 grid-cols-1 gap-5 w-full">
+        <div className="grid mt-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 w-full">
           {data.map((d) => (
             <CourtCard data={d} callBack={GetAllCourts} />
           ))}

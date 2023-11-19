@@ -9,7 +9,7 @@ import SwitchDarkMode from "shared/SwitchDarkMode/SwitchDarkMode";
 import NotifyDropdown from "./NotifyDropdown";
 import AvatarDropdown from "./AvatarDropdown";
 import MenuBar from "shared/MenuBar/MenuBar";
-import HeroSearchForm2MobileFactory from "components/HeroSearchForm2Mobile/HeroSearchForm2MobileFactory";
+// import HeroSearchForm2MobileFactory from "components/HeroSearchForm2Mobile/HeroSearchForm2MobileFactory";
 import { StaySearchFormFields } from "components/HeroSearchForm/type";
 
 interface Header3Props {
@@ -175,7 +175,7 @@ const Header3: FC<Header3Props> = ({ className = "" }) => {
                 {renderButtonOpenHeroSearch()}
               </div>
               <div className="lg:hidden w-full max-w-lg mx-auto">
-                <HeroSearchForm2MobileFactory />
+                {/* <HeroSearchForm2MobileFactory /> */}
               </div>
               {renderHeroSearch()}
             </div>

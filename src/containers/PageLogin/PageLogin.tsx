@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import facebookSvg from "images/Facebook.svg";
 import twitterSvg from "images/Twitter.svg";
 import googleSvg from "images/Google.svg";
@@ -6,10 +6,10 @@ import { Helmet } from "react-helmet";
 import Input from "shared/Input/Input";
 import { Link } from "react-router-dom";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
-import axios, { isCancel, AxiosError } from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import axios, { isCancel, AxiosError } from "axios";
+import { ToastContainer, toast } from "react-toastify";
 import tokenHandler from "utils/tokenHandler";
-import { useNavigate  } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export interface PageLoginProps {
   className?: string;
@@ -34,30 +34,40 @@ const loginSocials = [
 ];
 
 const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
-
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     let email = e.target[0].value;
     let password = e.target[1].value;
-    
-    axios.post(`${process.env.REACT_APP_API_DOMAIN}/api/user/login`, {
-      email, password
-    }).then((response) => {
-      setIsLoading(false)
-      tokenHandler.setToCookie('bint', response.data.token)
-      navigate("/");
-      window.location.reload()
-    }).catch((err) => {
-      setIsLoading(false)
-      toast.error("Something went wrong!", {
-        position: toast.POSITION.TOP_RIGHT
+
+    axios
+      .post(`${process.env.REACT_APP_API_DOMAIN}/api/user/login`, {
+        email,
+        password,
       })
-    })
-  }
+      .then((response) => {
+        setIsLoading(false);
+        tokenHandler.setToCookie("bint", response.data.token);
+        navigate("/");
+        window.location.reload();
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        toast.error("Something went wrong!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
+
+  useEffect(() => {
+    if (document.cookie.split("=")[1]) {
+      navigate("/account");
+    }
+  }, []);
+
   return (
     <div className={`nc-PageLogin ${className}`} data-nc-id="PageLogin">
       <Helmet>
@@ -94,7 +104,12 @@ const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
             <div className="absolute left-0 w-full top-1/2 transform -translate-y-1/2 border border-neutral-100 dark:border-neutral-800"></div>
           </div>
           {/* FORM */}
-          <form className="grid grid-cols-1 gap-6" onSubmit={(e) => { handleSubmit(e) }}>
+          <form
+            className="grid grid-cols-1 gap-6"
+            onSubmit={(e) => {
+              handleSubmit(e);
+            }}
+          >
             <label className="block">
               <span className="text-neutral-800 dark:text-neutral-200">
                 Email address

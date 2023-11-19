@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
-import CourtCard from "../../components/CourtCard";
 import VenueCard from "components/VenueCard";
 
 function Venue() {
@@ -34,7 +33,7 @@ function Venue() {
           </h1>
         </div>
       ) : (
-        <div className="grid mt-4 lg:grid-cols-4 grid-cols-1 gap-5 w-full">
+        <div className="grid mt-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 w-full">
           {data.map((d) => (
             <VenueCard data={d} callBack={GetAll} />
           ))}

@@ -70,7 +70,7 @@ function CourtForm({
           return base64Image;
         })
       );
-      onChange(base64Images, "gallery_image");
+      onChange(base64Images, "extra_images");
     }
   };
 
@@ -170,55 +170,57 @@ function CourtForm({
       <FormItem label="Opening Hours">
         {Object.entries(courtData.opening_hours)?.map((d: any, idx) => {
           return (
-            <div className="my-3">
-              <p className="mb-3 flex justify-between text-sm">
-                <div>{d[0]}</div>
-                <div
-                  className="text-[blue]"
-                  onClick={() => addOpeningHours(d[0])}
-                >
-                  + Add
+            <>
+              {d[0] !== "_id" && (
+                <div className="my-3">
+                  <p className="mb-3 flex justify-between text-sm">
+                    <div>{d[0]}</div>
+                    <div
+                      className="text-[blue]"
+                      onClick={() => addOpeningHours(d[0])}
+                    >
+                      + Add
+                    </div>
+                  </p>
+                  {d[1].map((data: any, index: number) => (
+                    <div className="flex gap-3 mt-2 items-center">
+                      <Input
+                        value={`${String(
+                          new Date(data.from).getHours()
+                        ).padStart(2, "0")}:${String(
+                          new Date(data.from).getMinutes()
+                        ).padStart(2, "0")}`}
+                        type="time"
+                        placeholder="From Time"
+                        onChange={(e) => {
+                          onTimeChange(e.target.value, d[0], "from", index);
+                        }}
+                      />
+                      <Input
+                        type="time"
+                        placeholder="To Time"
+                        value={`${String(new Date(data.to).getHours()).padStart(
+                          2,
+                          "0"
+                        )}:${String(new Date(data.to).getMinutes()).padStart(
+                          2,
+                          "0"
+                        )}`}
+                        onChange={(e) =>
+                          onTimeChange(e.target.value, d[0], "to", index)
+                        }
+                      />
+                      <div
+                        className="text-sm text-[red]"
+                        onClick={() => deleteOpeningHours(index, d[0])}
+                      >
+                        Delete
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </p>
-              {d[1].map((data: any, index: number) => (
-                <div className="flex gap-3 mt-2 items-center">
-                  <Input
-                    value={`${String(new Date(data.from).getHours()).padStart(
-                      2,
-                      "0"
-                    )}:${String(new Date(data.from).getMinutes()).padStart(
-                      2,
-                      "0"
-                    )}`}
-                    type="time"
-                    placeholder="From Time"
-                    onChange={(e) => {
-                      onTimeChange(e.target.value, d[0], "from", index);
-                    }}
-                  />
-                  <Input
-                    type="time"
-                    placeholder="To Time"
-                    value={`${String(new Date(data.to).getHours()).padStart(
-                      2,
-                      "0"
-                    )}:${String(new Date(data.to).getMinutes()).padStart(
-                      2,
-                      "0"
-                    )}`}
-                    onChange={(e) =>
-                      onTimeChange(e.target.value, d[0], "to", index)
-                    }
-                  />
-                  <div
-                    className="text-sm text-[red]"
-                    onClick={() => deleteOpeningHours(index, d[0])}
-                  >
-                    Delete
-                  </div>
-                </div>
-              ))}
-            </div>
+              )}
+            </>
           );
         })}
       </FormItem>
@@ -226,57 +228,71 @@ function CourtForm({
         {Object.entries(courtData.price).map((d: any, idx) => {
           console.log(d[1]);
           return (
-            <div className="my-3">
-              <p className="mb-3 flex justify-between text-sm">
-                <div>{d[0]}</div>
-                <div className="text-[blue]" onClick={() => addPrice(d[0])}>
-                  + Add
+            <>
+              {d[0] !== "_id" && (
+                <div className="my-3">
+                  <p className="mb-3 flex justify-between text-sm">
+                    <div>{d[0]}</div>
+                    <div className="text-[blue]" onClick={() => addPrice(d[0])}>
+                      + Add
+                    </div>
+                  </p>
+                  {d[1].length > 0 &&
+                    d[1].map((data: any, index: number) => (
+                      <div className="flex items-center gap-3 mt-3 ">
+                        <Input
+                          value={`${String(
+                            new Date(data.time_from).getHours()
+                          ).padStart(2, "0")}:${String(
+                            new Date(data.time_from).getMinutes()
+                          ).padStart(2, "0")}`}
+                          type="time"
+                          placeholder="From Time"
+                          onChange={(e) =>
+                            onPriceChange(
+                              e.target.value,
+                              d[0],
+                              "time_from",
+                              index
+                            )
+                          }
+                        />
+                        <Input
+                          type="time"
+                          placeholder="To Time"
+                          value={`${String(
+                            new Date(data.time_to).getHours()
+                          ).padStart(2, "0")}:${String(
+                            new Date(data.time_to).getMinutes()
+                          ).padStart(2, "0")}`}
+                          onChange={(e) =>
+                            onPriceChange(
+                              e.target.value,
+                              d[0],
+                              "time_to",
+                              index
+                            )
+                          }
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Price"
+                          value={data.amount}
+                          onChange={(e) =>
+                            onPriceChange(e.target.value, d[0], "amount", index)
+                          }
+                        />
+                        <p
+                          className="text-sm text-[red]"
+                          onClick={() => deletePrice(index, d[0])}
+                        >
+                          Delete
+                        </p>
+                      </div>
+                    ))}
                 </div>
-              </p>
-              {d[1].length > 0 &&
-                d[1].map((data: any, index: number) => (
-                  <div className="flex items-center gap-3 mt-3 ">
-                    <Input
-                      value={`${String(
-                        new Date(data.time_from).getHours()
-                      ).padStart(2, "0")}:${String(
-                        new Date(data.time_from).getMinutes()
-                      ).padStart(2, "0")}`}
-                      type="time"
-                      placeholder="From Time"
-                      onChange={(e) =>
-                        onPriceChange(e.target.value, d[0], "time_from", index)
-                      }
-                    />
-                    <Input
-                      type="time"
-                      placeholder="To Time"
-                      value={`${String(
-                        new Date(data.time_to).getHours()
-                      ).padStart(2, "0")}:${String(
-                        new Date(data.time_to).getMinutes()
-                      ).padStart(2, "0")}`}
-                      onChange={(e) =>
-                        onPriceChange(e.target.value, d[0], "time_to", index)
-                      }
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Price"
-                      value={data.amount}
-                      onChange={(e) =>
-                        onPriceChange(e.target.value, d[0], "amount", index)
-                      }
-                    />
-                    <p
-                      className="text-sm text-[red]"
-                      onClick={() => deletePrice(index, d[0])}
-                    >
-                      Delete
-                    </p>
-                  </div>
-                ))}
-            </div>
+              )}
+            </>
           );
         })}
       </FormItem>
@@ -356,21 +372,21 @@ function CourtForm({
                   </div>
                 </div>
               </div>
-              {courtData.gallery_image?.length > 0 && (
+              {courtData.extra_images?.length > 0 && (
                 <div className="mt-3">
                   <div className="text-md font-semibold">Preview</div>
                   <div className="flex gap-10">
-                    {courtData.gallery_image.map((d: any) => (
+                    {courtData.extra_images.map((d: any) => (
                       <div className="relative">
                         <img src={d} className="w-[200px]" alt="Preview" />
                         <XMarkIcon
                           className="absolute top-0 right-0 w-[20px]"
                           onClick={() => {
                             onChange(
-                              courtData.gallery_image.filter(
+                              courtData.extra_images.filter(
                                 (a: any) => a !== d
                               ),
-                              "gallery_image"
+                              "extra_images"
                             );
                           }}
                         />
@@ -380,7 +396,7 @@ function CourtForm({
                 </div>
               )}
               <p className="text-sm text-[red]">
-                {!(courtData.gallery_image?.length > 0 && showError)
+                {!(courtData.extra_images?.length > 0 && showError)
                   ? null
                   : "Atleast one image is Required"}
               </p>
@@ -424,7 +440,7 @@ function CourtCreationForm({
         description: "",
         policy: "",
         hero_image: "",
-        gallery_image: [],
+        extra_images: [],
         opening_hours: {
           monday: [
             {

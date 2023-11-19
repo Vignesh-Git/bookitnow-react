@@ -15,6 +15,8 @@ export interface FlightDateRangeInputProps {
   fieldClassName?: string;
   hasButtonSubmit?: boolean;
   selectsRange?: boolean;
+  onchange?: (date: Date | null) => void;
+  value?: Date | null;
 }
 
 const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
@@ -22,16 +24,13 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
   fieldClassName = "[ nc-hero-field-padding ]",
   hasButtonSubmit = false,
   selectsRange = true,
+  onchange,
+  value,
 }) => {
-  const [startDate, setStartDate] = useState<Date | null>(
-    new Date("2023/05/01")
-  );
-  const [endDate, setEndDate] = useState<Date | null>(new Date("2023/05/16"));
-
   const onChangeRangeDate = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
-    setStartDate(start);
-    setEndDate(end);
+
+    if (onchange) onchange(start);
   };
 
   const renderInput = () => {
@@ -42,13 +41,13 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
         </div>
         <div className="flex-grow text-left">
           <span className="block xl:text-lg font-semibold">
-            {startDate?.toLocaleDateString("en-US", {
+            {value?.toLocaleDateString("en-US", {
               month: "short",
               day: "2-digit",
             }) || "Add dates"}
-            {selectsRange && endDate
+            {selectsRange && value
               ? " - " +
-                endDate?.toLocaleDateString("en-US", {
+                value?.toLocaleDateString("en-US", {
                   month: "short",
                   day: "2-digit",
                 })
@@ -78,7 +77,7 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
               >
                 {renderInput()}
 
-                {startDate && open && (
+                {value && open && (
                   <ClearDataButton
                     onClick={() => onChangeRangeDate([null, null])}
                   />
@@ -110,10 +109,10 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
                 <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-neutral-800 p-8">
                   {selectsRange ? (
                     <DatePicker
-                      selected={startDate}
+                      selected={value}
                       onChange={onChangeRangeDate}
-                      startDate={startDate}
-                      endDate={endDate}
+                      startDate={value}
+                      endDate={value}
                       selectsRange
                       monthsShown={2}
                       showPopperArrow={false}
@@ -127,8 +126,11 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
                     />
                   ) : (
                     <DatePicker
-                      selected={startDate}
-                      onChange={(date) => setStartDate(date)}
+                      selected={value}
+                      onChange={(date) => {
+                        console.log(date);
+                        if (onchange) onchange(date);
+                      }}
                       monthsShown={2}
                       shouldCloseOnSelect={true}
                       showPopperArrow={false}

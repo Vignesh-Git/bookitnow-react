@@ -49,7 +49,51 @@ function CreationForm() {
             "id"
           )}`
         )
-        .then((res) => setData(res.data))
+        .then((res) => {
+          setData(res.data);
+          formik.setFieldValue("name", res.data.name);
+          formik.setFieldValue("website", res.data.website);
+          formik.setFieldValue(
+            "address.street_name",
+            res.data.address.street_name
+          );
+          formik.setFieldValue("address.city", res.data.address.city);
+          formik.setFieldValue("address.state", res.data.address.state);
+          formik.setFieldValue("address.country", res.data.address.country);
+          formik.setFieldValue("address.pincode", res.data.address.pincode);
+          formik.setFieldValue(
+            "address.geo_location.lat",
+            res.data.address.geo_location.lat
+          );
+          formik.setFieldValue(
+            "address.geo_location.long",
+            res.data.address.geo_location.long
+          );
+          formik.setFieldValue(
+            "social_media.facebook",
+            res.data.social_media.facebook
+          );
+          formik.setFieldValue(
+            "social_media.instagram",
+            res.data.social_media.instagram
+          );
+          formik.setFieldValue(
+            "social_media.twitter",
+            res.data.social_media.twitter
+          );
+          formik.setFieldValue(
+            "social_media.whatsapp",
+            res.data.social_media.whatsapp
+          );
+          formik.setFieldValue("hero_image", res.data.hero_image);
+          formik.setFieldValue("extra_images", res.data.extra_images);
+          formik.setFieldValue("description", res.data.description);
+          formik.setFieldValue("amenities", res.data.amenities);
+          formik.setFieldValue("available_days", res.data.available_days);
+          formik.setFieldValue("enabled", res.data.enabled);
+          formik.setFieldValue("is_featured", res.data.is_featured);
+          setCourts(res.data.courts);
+        })
         .catch(() => toast.error("Something went wrong"));
   }, [queryParams.get("id")]);
 
@@ -87,7 +131,7 @@ function CreationForm() {
         description: "",
         policy: "",
         hero_image: "",
-        gallery_image: [],
+        extra_images: [],
         opening_hours: {
           monday: [
             {
@@ -141,7 +185,7 @@ function CreationForm() {
 
   const editForm = (data: any) => {
     axios
-      .post(
+      .put(
         `${process.env.REACT_APP_API_DOMAIN}/api/venue/${queryParams.get(
           "id"
         )}`,
@@ -192,7 +236,7 @@ function CreationForm() {
     },
   });
 
-  const [courts, setCourts] = React.useState<any>(data.courts);
+  const [courts, setCourts] = React.useState<any>([]);
 
   return (
     <div>

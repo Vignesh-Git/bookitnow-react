@@ -3,6 +3,8 @@
 import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import React, { useState, useRef, useEffect, FC } from "react";
 import ClearDataButton from "./ClearDataButton";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export interface LocationInputProps {
   placeHolder?: string;
@@ -10,6 +12,8 @@ export interface LocationInputProps {
   className?: string;
   divHideVerticalLineClass?: string;
   autoFocus?: boolean;
+  onchange?: (e: string) => void;
+  value?: string;
 }
 
 const LocationInput: FC<LocationInputProps> = ({
@@ -17,12 +21,12 @@ const LocationInput: FC<LocationInputProps> = ({
   placeHolder = "Location",
   desc = "Where are you going?",
   className = "nc-flex-1.5",
-  divHideVerticalLineClass = "left-10 -right-0.5",
+  onchange,
+  value,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [value, setValue] = useState("");
   const [showPopover, setShowPopover] = useState(autoFocus);
 
   useEffect(() => {
@@ -47,11 +51,11 @@ const LocationInput: FC<LocationInputProps> = ({
   }, [showPopover]);
 
   const eventClickOutsideDiv = (event: MouseEvent) => {
-    console.log(containerRef.current)
+    console.log(containerRef.current);
     if (!containerRef.current) return;
     // CLICK IN_SIDE
     if (containerRef.current.contains(event.target as Node)) {
-      console.log("first")
+      console.log("first");
       return;
     }
     // CLICK OUT_SIDE
@@ -59,9 +63,28 @@ const LocationInput: FC<LocationInputProps> = ({
   };
 
   const handleSelectLocation = (item: string) => {
-    setValue(item);
+    onchange && onchange(item);
     setShowPopover(false);
   };
+  const [data, setData] = useState<
+    {
+      city: string;
+      country: string;
+      _id: string;
+    }[]
+  >([]);
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/get_all`)
+      .then((response) => {
+        setData(response.data.map((d: any) => d.address));
+      })
+      .catch((e) => {
+        toast.error("Something went wrong!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  }, []);
 
   const renderRecentSearches = () => {
     return (
@@ -70,22 +93,20 @@ const LocationInput: FC<LocationInputProps> = ({
           Recent searches
         </h3>
         <div className="mt-2">
-          {[
-            "Hamptons123, Suffolk County, NY",
-            "Las Vegas, NV, United States",
-            "Ueno, Taito, Tokyo",
-            "Ikebukuro, Toshima, Tokyo",
-          ].map((item) => (
+          {data.map((item) => (
             <span
-              onClick={() => handleSelectLocation(item)}
-              key={item}
+              onClick={() => {
+                handleSelectLocation(`${item.city}, ${item.country}`);
+                onchange && onchange(`${item.city}, ${item.country}`);
+              }}
+              key={item._id}
               className="flex px-4 sm:px-8 items-center space-x-3 sm:space-x-4 py-4 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
             >
               <span className="block text-neutral-400">
                 <ClockIcon className="h-4 sm:h-6 w-4 sm:w-6" />
               </span>
               <span className=" block font-medium text-neutral-700 dark:text-neutral-200">
-                {item}
+                {`${item.city}, ${item.country}`}
               </span>
             </span>
           ))}
@@ -139,7 +160,7 @@ const LocationInput: FC<LocationInputProps> = ({
             value={value}
             autoFocus={showPopover}
             onChange={(e: any) => {
-              setValue(e.currentTarget.value);
+              onchange && onchange(e.currentTarget.value);
             }}
             ref={inputRef}
           />
@@ -149,7 +170,7 @@ const LocationInput: FC<LocationInputProps> = ({
           {value && showPopover && (
             <ClearDataButton
               onClick={() => {
-                setValue("");
+                onchange && onchange("");
               }}
             />
           )}

@@ -15,12 +15,6 @@ export default function AvatarDropdown({ isAdmin = false }) {
 
   const solutions = [
     {
-      name: "Booking",
-      href: "/booking",
-      icon: HomeIcon,
-      isVisible: isAdmin,
-    },
-    {
       name: "Admin Console",
       href: "/admin/console",
       icon: AdjustmentsHorizontalIcon,

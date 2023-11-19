@@ -10,6 +10,8 @@ export interface LocationInputProps {
   className?: string;
   divHideVerticalLineClass?: string;
   autoFocus?: boolean;
+  onchange?: (e: string) => void;
+  value?: string;
 }
 
 const SportInput: FC<LocationInputProps> = ({
@@ -17,12 +19,13 @@ const SportInput: FC<LocationInputProps> = ({
   placeHolder = "Location",
   desc = "Where are you going?",
   className = "nc-flex-1.5",
+  onchange,
+  value,
   divHideVerticalLineClass = "left-10 -right-0.5",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [value, setValue] = useState("");
   const [showPopover, setShowPopover] = useState(autoFocus);
 
   useEffect(() => {
@@ -57,22 +60,22 @@ const SportInput: FC<LocationInputProps> = ({
   };
 
   const handleSelectLocation = (item: string) => {
-    setValue(item);
+    onchange && onchange(item);
     setShowPopover(false);
   };
 
-  const optionsList = [
-   "Badminton", "Foodball", "Soccer"
-  ]
+  const optionsList = ["Badminton", "Foodball", "Soccer"];
 
   const renderRecentSearches = () => {
     return (
       <>
-        
         <div className="mt-2">
           {optionsList.map((item) => (
             <span
-              onClick={() => handleSelectLocation(item)}
+              onClick={() => {
+                handleSelectLocation(item);
+                onchange && onchange(item);
+              }}
               key={item}
               className="flex px-4 sm:px-8 items-center space-x-3 sm:space-x-4 py-4 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
             >
@@ -129,7 +132,7 @@ const SportInput: FC<LocationInputProps> = ({
             value={value}
             autoFocus={showPopover}
             onChange={(e) => {
-              setValue(e.currentTarget.value);
+              onchange && onchange(e.currentTarget.value);
             }}
             ref={inputRef}
           />
@@ -139,7 +142,7 @@ const SportInput: FC<LocationInputProps> = ({
           {value && showPopover && (
             <ClearDataButton
               onClick={() => {
-                setValue("");
+                onchange && onchange("");
               }}
             />
           )}

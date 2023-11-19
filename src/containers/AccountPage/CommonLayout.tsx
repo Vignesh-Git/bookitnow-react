@@ -52,6 +52,16 @@ const CommonLayout: FC<CommonLayoutProps> = ({ children }) => {
             >
               Change Billing
             </NavLink>
+            <NavLink
+              to="/admin/console"
+              className={({ isActive }) =>
+                `block py-5 md:py-8 border-b-2 flex-shrink-0 ${
+                  !isActive ? "border-transparent" : "border-primary-500"
+                }`
+              }
+            >
+              Admin Console
+            </NavLink>
           </div>
         </div>
       </div>

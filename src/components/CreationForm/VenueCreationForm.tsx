@@ -255,11 +255,14 @@ function VenueCreationForm({ formik }: { formik: FormikProps<FormValues> }) {
         <div className="w-20 border-b border-neutral-200 dark:border-neutral-700"></div>
         <div className="flex flex-wrap gap-5">
           {days.map((d) => (
-            <Checkbox
-              label={d.label}
-              name={d.label}
-              onChange={(e: any) => handleCheckboxChange(e.target.value)}
-            />
+            <>
+              <Checkbox
+                label={d.label}
+                checked={formik.values.available_days.includes(d.label)}
+                name={d.label}
+                onChange={(e: any) => handleCheckboxChange(e.target.value)}
+              />
+            </>
           ))}
         </div>
         {formik.touched.available_days && formik.errors.available_days && (
@@ -276,6 +279,7 @@ function VenueCreationForm({ formik }: { formik: FormikProps<FormValues> }) {
             <Checkbox
               label={amenity.id}
               name={amenity.id}
+              checked={formik.values.amenities.includes(amenity.id)}
               onChange={(e: any) => handleAmenityCheckboxChange(e.target.value)}
             />
           ))}

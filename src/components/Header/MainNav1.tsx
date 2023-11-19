@@ -4,7 +4,7 @@ import Navigation from "shared/Navigation/Navigation";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import MenuBar from "shared/MenuBar/MenuBar";
 import SwitchDarkMode from "shared/SwitchDarkMode/SwitchDarkMode";
-import HeroSearchForm2MobileFactory from "components/HeroSearchForm2Mobile/HeroSearchForm2MobileFactory";
+// import HeroSearchForm2MobileFactory from "components/HeroSearchForm2Mobile/HeroSearchForm2MobileFactory";
 import AvatarDropdown from "./AvatarDropdown";
 import tokenHandler from "utils/tokenHandler";
 
@@ -40,7 +40,7 @@ const MainNav1: FC<MainNav1Props> = ({ className = "" }) => {
         </div>
 
         <div className="lg:hidden flex-[3] max-w-lg !mx-auto md:px-3">
-          <HeroSearchForm2MobileFactory />
+          {/* <HeroSearchForm2MobileFactory /> */}
         </div>
 
         <div className="hidden md:flex flex-shrink-0 items-center justify-end flex-1 lg:flex-none text-neutral-700 dark:text-neutral-100">

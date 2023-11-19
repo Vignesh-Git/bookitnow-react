@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import LocationInput from "../LocationInput";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
@@ -10,9 +10,16 @@ import DurationInput from "../DurationInput";
 import TimeInput from "../TimeInput";
 import SportInput from "../SportInput";
 import ButtonSubmit from "../ButtonSubmit";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export interface FlightSearchFormProps {}
-
+export interface IData {
+  location: string;
+  sports: string;
+  date: Date | null;
+  time: string;
+  duration: string;
+}
 const flightClass = [
   {
     name: "Economy",
@@ -31,6 +38,7 @@ const flightClass = [
 export type TypeDropOffLocationType = "roundTrip" | "oneWay" | "";
 
 const FlightSearchForm: FC<FlightSearchFormProps> = () => {
+  const navigate = useNavigate();
   const [dropOffLocationType, setDropOffLocationType] =
     useState<TypeDropOffLocationType>("oneWay");
   const [flightClassState, setFlightClassState] = useState("Economy");
@@ -181,41 +189,45 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
     );
   };
 
-  const renderRadioBtn = () => {
-    return (
-      <div className=" py-5 [ nc-hero-field-padding ] flex flex-row flex-wrap border-b border-neutral-100 dark:border-neutral-700">
-        <div
-          className={`py-1.5 px-4 flex items-center rounded-full font-medium text-xs cursor-pointer mr-2 my-1 sm:mr-3 ${
-            dropOffLocationType === "roundTrip"
-              ? "bg-black shadow-black/10 shadow-lg text-white"
-              : "border border-neutral-300 dark:border-neutral-700"
-          }`}
-          onClick={(e) => setDropOffLocationType("roundTrip")}
-        >
-          Round-trip
-        </div>
-        <div
-          className={`py-1.5 px-4 flex items-center rounded-full font-medium text-xs cursor-pointer mr-2 my-1 sm:mr-3 ${
-            dropOffLocationType === "oneWay"
-              ? "bg-black text-white shadow-black/10 shadow-lg"
-              : "border border-neutral-300 dark:border-neutral-700"
-          }`}
-          onClick={(e) => setDropOffLocationType("oneWay")}
-        >
-          One-way
-        </div>
+  const [data, setData] = useState<IData>({
+    location: "",
+    sports: "",
+    date: null,
+    time: "",
+    duration: "",
+  });
+  const location = useLocation();
 
-        <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8 mr-2 my-1 sm:mr-3"></div>
-
-        <div className="mr-2 my-1 sm:mr-3 border border-neutral-300 dark:border-neutral-700 rounded-full">
-          {renderSelectClass()}
-        </div>
-        <div className="my-1 border border-neutral-300 dark:border-neutral-700 rounded-full">
-          {renderGuest()}
-        </div>
-      </div>
-    );
-  };
+  useEffect(() => {
+    // const queryParams = new URLSearchParams(location.search);
+    // if (queryParams.get("location") !== null) {
+    //   setData((prev) => ({ ...prev, location: queryParams.get("location") }));
+    // console.log(queryParams.get("location"));
+    // }
+    // if (queryParams.get("location")) {
+    // }
+    // setData((prev) => ({
+    //   ...prev,
+    //   location:
+    //     queryParams.get("location") != null ? queryParams.get("location") : "",
+    // }));
+    // setData((prev) => ({
+    //   ...prev,
+    //   date:
+    //     queryParams.get("date") != null
+    //       ? new Date(queryParams.get("date"))
+    //       : "",
+    // }));
+    // setData((prev) => ({
+    //   ...prev,
+    //   time: queryParams.get("sports") != null ? queryParams.get("time") : "",
+    // }));
+    // setData((prev) => ({
+    //   ...prev,
+    //   duration:
+    //     queryParams.get("sports") != null ? queryParams.get("duration") : "",
+    // }));
+  }, []);
 
   const renderForm = () => {
     return (
@@ -223,22 +235,28 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
         {/* {renderRadioBtn()} */}
         <div className="flex flex-1 rounded-full">
           <LocationInput
+            value={data.location}
             placeHolder="Venue"
             desc="Where do you want to play?"
             className="flex-1"
+            onchange={(e) => setData((prev) => ({ ...prev, location: e }))}
           />
           <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
           <SportInput
+            value={data.sports}
             placeHolder="Sport"
             desc="What do you want to play?"
             className="flex-1"
             divHideVerticalLineClass=" -inset-x-0.5"
+            onchange={(e) => setData((prev) => ({ ...prev, sports: e }))}
           />
 
           <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
           <FlightDateRangeInput
-            selectsRange={dropOffLocationType !== "oneWay"}
+            value={data.date}
+            selectsRange={false}
             className="flex-1"
+            onchange={(date) => setData((prev) => ({ ...prev, date: date }))}
           />
 
           <div className="self-center border-r border-slate-200 dark:border-slate-700 h-8"></div>
@@ -247,6 +265,8 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
             placeHolder="Time"
             desc="At what time?"
             className="flex-1"
+            value={data.time}
+            onChange={(e) => setData((prev) => ({ ...prev, time: e }))}
             divHideVerticalLineClass=" -inset-x-0.5"
           />
 
@@ -256,17 +276,52 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
             placeHolder="Duration"
             desc="How long?"
             className="flex-1"
+            value={data.duration}
             divHideVerticalLineClass=" -inset-x-0.5"
+            onchange={(e) => setData((prev) => ({ ...prev, duration: e }))}
           />
 
           <div className="py-4 pr-4">
-            <ButtonSubmit href="/listing-car-detail" />
+            <div
+              onClick={(e) => {
+                var queryParams = Object.keys(data)
+                  .map((key) => {
+                    const value = data[key as keyof IData];
+
+                    if (value !== "" && value !== null) {
+                      return `${key}=${encodeURIComponent(String(value))}`;
+                    } else {
+                      return null;
+                    }
+                  })
+                  .filter((param) => param !== null)
+                  .join("&");
+
+                navigate(`/filtered-venue?${queryParams}`);
+              }}
+              className="h-14 md:h-16 w-full md:w-16 rounded-full bg-primary-6000 hover:bg-primary-700 flex items-center justify-center text-neutral-50 focus:outline-none"
+            >
+              <span className="mr-3 md:hidden">Search</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </form>
     );
   };
-
   return renderForm();
 };
 

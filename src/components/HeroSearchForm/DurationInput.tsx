@@ -11,19 +11,22 @@ export interface LocationInputProps {
   className?: string;
   divHideVerticalLineClass?: string;
   autoFocus?: boolean;
+  onchange?: (e: string) => void;
+  value?: string;
 }
 
 const DurationInput: FC<LocationInputProps> = ({
   autoFocus = false,
   placeHolder = "Location",
   desc = "Where are you going?",
+  onchange,
   className = "nc-flex-1.5",
   divHideVerticalLineClass = "left-10 -right-0.5",
+  value,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [value, setValue] = useState("");
   const [showPopover, setShowPopover] = useState(autoFocus);
 
   useEffect(() => {
@@ -58,7 +61,7 @@ const DurationInput: FC<LocationInputProps> = ({
   };
 
   const handleSelectLocation = (item: string) => {
-    setValue(item);
+    onchange && onchange(item);
     setShowPopover(false);
   };
 
@@ -82,7 +85,10 @@ const DurationInput: FC<LocationInputProps> = ({
         <div className="mt-2">
           {optionsList.map((item) => (
             <span
-              onClick={() => handleSelectLocation(item)}
+              onClick={() => {
+                handleSelectLocation(item);
+                onchange && onchange(item);
+              }}
               key={item}
               className="flex px-4 sm:px-8 items-center space-x-3 sm:space-x-4 py-4 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer"
             >
@@ -139,7 +145,8 @@ const DurationInput: FC<LocationInputProps> = ({
             value={value}
             autoFocus={showPopover}
             onChange={(e) => {
-              setValue(e.currentTarget.value);
+              // setValue(e.currentTarget.value);
+              onchange && onchange(e.currentTarget.value);
             }}
             ref={inputRef}
           />
@@ -149,7 +156,7 @@ const DurationInput: FC<LocationInputProps> = ({
           {value && showPopover && (
             <ClearDataButton
               onClick={() => {
-                setValue("");
+                onchange && onchange("");
               }}
             />
           )}

@@ -51,6 +51,7 @@ import ManageBooking from "components/ManageBooking";
 import CourtCreation from "components/CourtCreation";
 import CourtListing from "components/Court";
 import Admin from "components/Admin";
+import FilteredVenue from "components/FilteredVenue";
 export const pages: Page[] = [
   { path: "/", exact: true, component: PageHome },
   { path: "/#", exact: true, component: PageHome },
@@ -116,6 +117,7 @@ export const pages: Page[] = [
   { path: "/create", component: CreationForm },
   { path: "/booking", component: ManageBooking },
   { path: "/admin/console", component: Admin },
+  { path: "/filtered-venue", component: FilteredVenue },
   {
     path: "/court",
     component: CourtListing,
