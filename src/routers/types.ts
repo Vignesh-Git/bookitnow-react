@@ -6,8 +6,10 @@ export interface LocationStates {
   "/home-2"?: {};
   "/home-3"?: {};
   "/home-1-header-2"?: {};
+  "/venue/:id"?: {};
   //
   "/listing-flights"?: {};
+  "/venue": {};
   //
   "/listing-stay"?: {};
   "/listing-stay-map"?: {};

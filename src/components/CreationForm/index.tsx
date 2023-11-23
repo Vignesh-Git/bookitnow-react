@@ -96,8 +96,6 @@ function CreationForm() {
           setCourts(res.data.courts);
         })
         .catch(() => toast.error("Something went wrong"));
-    } else {
-      setCourts(data.courts);
     }
   }, [queryParams.get("id")]);
 
@@ -137,33 +135,33 @@ function CreationForm() {
         hero_image: "",
         extra_images: [],
         opening_hours: {
-          monday: [
-            {
-              from: "",
-              to: "",
-            },
-          ],
-          tuesday: [],
-          wednesday: [],
-          thursday: [],
-          friday: [],
-          saturday: [],
-          sunday: [],
+          // monday: [
+          //   {
+          //     from: "",
+          //     to: "",
+          //   },
+          // ],
+          // tuesday: [],
+          // wednesday: [],
+          // thursday: [],
+          // friday: [],
+          // saturday: [],
+          // sunday: [],
         },
         price: {
-          monday: [
-            {
-              time_from: "",
-              time_to: "",
-              amount: "",
-            },
-          ],
-          tuesday: [],
-          wednesday: [],
-          thursday: [],
-          friday: [],
-          saturday: [],
-          sunday: [],
+          // monday: [
+          //   {
+          //     time_from: "",
+          //     time_to: "",
+          //     amount: "",
+          //   },
+          // ],
+          // tuesday: [],
+          // wednesday: [],
+          // thursday: [],
+          // friday: [],
+          // saturday: [],
+          // sunday: [],
         },
         enabled: true,
       },
@@ -239,6 +237,39 @@ function CreationForm() {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       setData((prev: any) => ({ ...prev, ...values }));
+      if (!queryParams.get("id")) {
+        let availableDays: any = {};
+        let pricing: any = {};
+        values.available_days.map((d) => {
+          availableDays[d] = [
+            {
+              from: "",
+              to: "",
+            },
+          ];
+          pricing[d] = [
+            {
+              time_from: "",
+              time_to: "",
+              amount: "",
+            },
+          ];
+        });
+        console.log(availableDays, pricing);
+        setCourts([
+          {
+            court_id: "",
+            number_of_courts: "",
+            description: "",
+            policy: "",
+            hero_image: "",
+            extra_images: [],
+            opening_hours: availableDays,
+            price: pricing,
+            enabled: true,
+          },
+        ]);
+      }
       setCount(2);
     },
   });
@@ -253,7 +284,9 @@ function CreationForm() {
         <CourtCreationForm
           courts={courts}
           setCourts={setCourts}
-          onBack={() => setCount(1)}
+          onBack={() => {
+            setCount(1);
+          }}
           onSubmit={(e: any) => {
             queryParams.get("id")
               ? editForm({ ...data, courts })

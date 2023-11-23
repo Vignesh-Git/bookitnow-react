@@ -52,6 +52,8 @@ import CourtCreation from "components/CourtCreation";
 import CourtListing from "components/Court";
 import Admin from "components/Admin";
 import FilteredVenue from "components/FilteredVenue";
+import Venue from "components/Venue";
+import VenueListing from "components/VenueListing";
 export const pages: Page[] = [
   { path: "/", exact: true, component: PageHome },
   { path: "/#", exact: true, component: PageHome },
@@ -61,7 +63,7 @@ export const pages: Page[] = [
   //
   { path: "/listing-stay", component: ListingStayPage },
   { path: "/listing-stay-map", component: ListingStayMapPage },
-  { path: "/listing-stay-detail", component: ListingStayDetailPage },
+  { path: `/venue/:id`, component: ListingStayDetailPage },
   //
   {
     path: "/listing-experiences",
@@ -118,6 +120,7 @@ export const pages: Page[] = [
   { path: "/booking", component: ManageBooking },
   { path: "/admin/console", component: Admin },
   { path: "/filtered-venue", component: FilteredVenue },
+  { path: "/venue", component: VenueListing },
   {
     path: "/court",
     component: CourtListing,

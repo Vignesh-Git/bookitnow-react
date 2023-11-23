@@ -184,32 +184,44 @@ function CourtForm({
                   </p>
                   {d[1].map((data: any, index: number) => (
                     <div className="flex gap-3 mt-2 items-center">
-                      <Input
-                        value={`${String(
-                          new Date(data.from).getHours()
-                        ).padStart(2, "0")}:${String(
-                          new Date(data.from).getMinutes()
-                        ).padStart(2, "0")}`}
-                        type="time"
-                        placeholder="From Time"
-                        onChange={(e) => {
-                          onTimeChange(e.target.value, d[0], "from", index);
-                        }}
-                      />
-                      <Input
-                        type="time"
-                        placeholder="To Time"
-                        value={`${String(new Date(data.to).getHours()).padStart(
-                          2,
-                          "0"
-                        )}:${String(new Date(data.to).getMinutes()).padStart(
-                          2,
-                          "0"
-                        )}`}
-                        onChange={(e) =>
-                          onTimeChange(e.target.value, d[0], "to", index)
-                        }
-                      />
+                      <div className="w-[50%]">
+                        <Input
+                          value={`${String(
+                            new Date(data.from).getHours()
+                          ).padStart(2, "0")}:${String(
+                            new Date(data.from).getMinutes()
+                          ).padStart(2, "0")}`}
+                          type="time"
+                          placeholder="From Time"
+                          onChange={(e) => {
+                            onTimeChange(e.target.value, d[0], "from", index);
+                          }}
+                        />
+                        {!data.from && showError && (
+                          <p className="text-sm text-[red]">
+                            {"Enter Start Time"}
+                          </p>
+                        )}
+                      </div>
+                      <div className="w-[50%]">
+                        <Input
+                          type="time"
+                          placeholder="To Time"
+                          value={`${String(
+                            new Date(data.to).getHours()
+                          ).padStart(2, "0")}:${String(
+                            new Date(data.to).getMinutes()
+                          ).padStart(2, "0")}`}
+                          onChange={(e) =>
+                            onTimeChange(e.target.value, d[0], "to", index)
+                          }
+                        />
+                        {!data.to && showError && (
+                          <p className="text-sm text-[red]">
+                            {"Enter End Time"}
+                          </p>
+                        )}
+                      </div>
                       <div
                         className="text-sm text-[red] cursor-pointer"
                         onClick={() => deleteOpeningHours(index, d[0])}
@@ -243,48 +255,74 @@ function CourtForm({
                   {d[1].length > 0 &&
                     d[1].map((data: any, index: number) => (
                       <div className="flex items-center gap-3 mt-3 ">
-                        <Input
-                          value={`${String(
-                            new Date(data.time_from).getHours()
-                          ).padStart(2, "0")}:${String(
-                            new Date(data.time_from).getMinutes()
-                          ).padStart(2, "0")}`}
-                          type="time"
-                          placeholder="From Time"
-                          onChange={(e) =>
-                            onPriceChange(
-                              e.target.value,
-                              d[0],
-                              "time_from",
-                              index
-                            )
-                          }
-                        />
-                        <Input
-                          type="time"
-                          placeholder="To Time"
-                          value={`${String(
-                            new Date(data.time_to).getHours()
-                          ).padStart(2, "0")}:${String(
-                            new Date(data.time_to).getMinutes()
-                          ).padStart(2, "0")}`}
-                          onChange={(e) =>
-                            onPriceChange(
-                              e.target.value,
-                              d[0],
-                              "time_to",
-                              index
-                            )
-                          }
-                        />
-                        <Input
-                          type="number"
-                          placeholder="Price"
-                          value={data.amount}
-                          onChange={(e) =>
-                            onPriceChange(e.target.value, d[0], "amount", index)
-                          }
-                        />
+                        <div className="w-[50%]">
+                          <Input
+                            value={`${String(
+                              new Date(data.time_from).getHours()
+                            ).padStart(2, "0")}:${String(
+                              new Date(data.time_from).getMinutes()
+                            ).padStart(2, "0")}`}
+                            type="time"
+                            placeholder="From Time"
+                            onChange={(e) =>
+                              onPriceChange(
+                                e.target.value,
+                                d[0],
+                                "time_from",
+                                index
+                              )
+                            }
+                          />
+                          {!data.time_from && showError && (
+                            <p className="text-sm text-[red]">
+                              {"Enter Start Time"}
+                            </p>
+                          )}
+                        </div>
+                        <div className="w-[50%]">
+                          <Input
+                            type="time"
+                            placeholder="To Time"
+                            value={`${String(
+                              new Date(data.time_to).getHours()
+                            ).padStart(2, "0")}:${String(
+                              new Date(data.time_to).getMinutes()
+                            ).padStart(2, "0")}`}
+                            onChange={(e) =>
+                              onPriceChange(
+                                e.target.value,
+                                d[0],
+                                "time_to",
+                                index
+                              )
+                            }
+                          />
+                          {!data.time_to && showError && (
+                            <p className="text-sm text-[red]">
+                              {"Enter End Time"}
+                            </p>
+                          )}
+                        </div>
+                        <div className="w-[50%]">
+                          <Input
+                            type="number"
+                            placeholder="Price"
+                            value={data.amount}
+                            onChange={(e) =>
+                              onPriceChange(
+                                e.target.value,
+                                d[0],
+                                "amount",
+                                index
+                              )
+                            }
+                          />
+                          {!data.amount && showError && (
+                            <p className="text-sm text-[red]">
+                              {"Enter Amount"}
+                            </p>
+                          )}
+                        </div>
                         <p
                           className="text-sm text-[red] cursor-pointer"
                           onClick={() => deletePrice(index, d[0])}
@@ -494,7 +532,46 @@ function CourtCreationForm({
       nextBtnText="Submit"
       NextBtnOnClick={() => {
         setShowError(true);
-        onSubmit(courts);
+        let timing: any = [];
+        let pricing: any = [];
+        console.log(courts);
+        courts.forEach((court: any) => {
+          Object.entries(court.opening_hours).map((d: any) => {
+            if (d[0] !== "_id") {
+              d[1].map((data: any) => {
+                if (data.from && data.to) {
+                  timing.push(true);
+                } else {
+                  timing.push(false);
+                }
+              });
+            }
+          });
+
+          Object.entries(court.price).map((d: any) => {
+            if (d[0] !== "_id") {
+              d[1].map((data: any) => {
+                if (data.time_from && data.time_to && data.amount) {
+                  pricing.push(true);
+                } else {
+                  pricing.push(false);
+                }
+              });
+            }
+          });
+
+          if (
+            court.court_id &&
+            court.description &&
+            court.extra_images.length > 1 &&
+            court.hero_image &&
+            court.policy &&
+            timing.filter((a: any) => a === true).length === timing.length &&
+            pricing.filter((a: any) => a === true).length === pricing.length
+          ) {
+            onSubmit(courts);
+          }
+        });
       }}
     >
       <span

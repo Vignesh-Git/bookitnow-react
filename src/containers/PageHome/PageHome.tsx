@@ -52,7 +52,7 @@ const DEMO_CATS: TaxonomyType[] = [
     taxonomy: "category",
     count: 188288,
     thumbnail:
-      "https://cdn-jiaap.nitrocdn.com/QxFildkZbOSQJPKuySjQTwLiIYhgZTWh/assets/images/optimized/rev-ccd2578/activ8athlete.com/wp-content/uploads/2021/08/Activ8-Private-Training-1.png",
+      "https://m.economictimes.com/thumb/msid-77734860,width-1200,height-900,resizemode-4,imgsize-951020/sports_istock.jpg",
   },
 
   {

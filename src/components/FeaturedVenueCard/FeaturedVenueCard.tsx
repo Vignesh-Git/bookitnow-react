@@ -83,7 +83,7 @@ const FeaturedVenueCard: FC<StayCardProps> = ({
         </div>
         <div className="w-100 border-b border-neutral-100 dark:border-neutral-800"></div>
         <div className="flex justify-between items-center">
-          <ButtonSecondary>Details</ButtonSecondary>
+          <ButtonSecondary href={`/venue/${data._id}`}>Details</ButtonSecondary>
           <ButtonPrimary>Book</ButtonPrimary>
 
           {/* <span className="text-base font-semibold">

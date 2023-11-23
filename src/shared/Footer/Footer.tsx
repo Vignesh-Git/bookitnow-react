@@ -78,6 +78,15 @@ const Footer: React.FC = () => {
     <div className="nc-Footer relative py-12 lg:py-16 border-t border-neutral-200 dark:border-neutral-700">
       <div className="container grid grid-cols-2 gap-y-10 gap-x-5 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10 ">
         {/* <div className="grid grid-cols-4 gap-5 col-span-2 md:col-span-4 lg:md:col-span-1 lg:flex lg:flex-col"></div> */}
+        <div className="flex flex-col">
+          <Logo />
+          <div className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white text-sm ">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
+            quod consequuntur reprehenderit error consequatur nemo numquam sint
+            beatae dolorem officiis minus, voluptatibus, deleniti magnam ab
+            delectus! Corrupti ex temporibus error?
+          </div>
+        </div>
         {widgetMenus.map(renderWidgetMenuItem)}
       </div>
       <div className="container h-[1px] bg-[#374151] my-8"></div>
