@@ -81,10 +81,10 @@ const Footer: React.FC = () => {
         <div className="flex flex-col">
           <Logo />
           <div className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white text-sm ">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-            quod consequuntur reprehenderit error consequatur nemo numquam sint
-            beatae dolorem officiis minus, voluptatibus, deleniti magnam ab
-            delectus! Corrupti ex temporibus error?
+            With a user-friendly interface, real-time updates, and payment
+            options, the platform enhances convenience for individuals and
+            groups seeking to secure playing spaces for various sports and
+            recreational activities.
           </div>
         </div>
         {widgetMenus.map(renderWidgetMenuItem)}

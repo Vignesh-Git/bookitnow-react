@@ -17,6 +17,7 @@ export interface FlightDateRangeInputProps {
   selectsRange?: boolean;
   onchange?: (date: Date | null) => void;
   value?: Date | null;
+  caption?: boolean;
 }
 
 const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
@@ -26,7 +27,9 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
   selectsRange = true,
   onchange,
   value,
+  caption = true,
 }) => {
+  console.log(typeof value, value);
   const onChangeRangeDate = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
 
@@ -41,10 +44,15 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
         </div>
         <div className="flex-grow text-left">
           <span className="block xl:text-lg font-semibold">
-            {value?.toLocaleDateString("en-US", {
-              month: "short",
-              day: "2-digit",
-            }) || "Add dates"}
+            {typeof value === "string"
+              ? new Date(value).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                })
+              : value?.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                }) || "Enter date"}
             {selectsRange && value
               ? " - " +
                 value?.toLocaleDateString("en-US", {
@@ -53,9 +61,11 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
                 })
               : ""}
           </span>
-          <span className="block mt-1 text-sm text-neutral-400 leading-none font-light">
-            {selectsRange ? "Pick up - Drop off" : "Pick up date"}
-          </span>
+          {caption && (
+            <span className="block mt-1 text-sm text-neutral-400 leading-none font-light">
+              {selectsRange ? "From - To" : "Date"}
+            </span>
+          )}
         </div>
       </>
     );
@@ -79,17 +89,12 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
 
                 {value && open && (
                   <ClearDataButton
-                    onClick={() => onChangeRangeDate([null, null])}
+                    onClick={() => {
+                      onChangeRangeDate([null, null]);
+                    }}
                   />
                 )}
               </Popover.Button>
-
-              {/* BUTTON SUBMIT OF FORM */}
-              {hasButtonSubmit && (
-                <div className="pr-2 xl:pr-4">
-                  <ButtonSubmit href="/listing-car-detail" />
-                </div>
-              )}
             </div>
 
             {/* {open && (

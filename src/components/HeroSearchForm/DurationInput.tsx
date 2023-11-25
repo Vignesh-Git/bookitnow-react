@@ -13,6 +13,8 @@ export interface LocationInputProps {
   autoFocus?: boolean;
   onchange?: (e: string) => void;
   value?: string;
+  caption?: boolean;
+  fieldClassName?: string;
 }
 
 const DurationInput: FC<LocationInputProps> = ({
@@ -23,6 +25,8 @@ const DurationInput: FC<LocationInputProps> = ({
   className = "nc-flex-1.5",
   divHideVerticalLineClass = "left-10 -right-0.5",
   value,
+  caption = true,
+  fieldClassName,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -130,7 +134,7 @@ const DurationInput: FC<LocationInputProps> = ({
     <div className={`relative flex ${className}`} ref={containerRef}>
       <div
         onClick={() => setShowPopover(true)}
-        className={`flex z-10 flex-1 relative [ nc-hero-field-padding ] flex-shrink-0 items-center space-x-3 cursor-pointer focus:outline-none text-left  ${
+        className={`flex ${fieldClassName} z-10 flex-1 relative [ nc-hero-field-padding ] flex-shrink-0 items-center space-x-3 cursor-pointer focus:outline-none text-left  ${
           showPopover ? "nc-hero-field-focused" : ""
         }`}
       >
@@ -150,9 +154,13 @@ const DurationInput: FC<LocationInputProps> = ({
             }}
             ref={inputRef}
           />
-          <span className="block mt-0.5 text-sm text-neutral-400 font-light ">
-            <span className="line-clamp-1">{!!value ? placeHolder : desc}</span>
-          </span>
+          {caption && (
+            <span className="block mt-0.5 text-sm text-neutral-400 font-light ">
+              <span className="line-clamp-1">
+                {!!value ? placeHolder : desc}
+              </span>
+            </span>
+          )}
           {value && showPopover && (
             <ClearDataButton
               onClick={() => {

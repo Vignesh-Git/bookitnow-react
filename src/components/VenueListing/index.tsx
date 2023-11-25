@@ -1,9 +1,6 @@
 import axios from "axios";
 import FeaturedVenueCard from "components/FeaturedVenueCard/FeaturedVenueCard";
-import Venue from "components/Venue";
 import React, { useEffect, useState } from "react";
-import ButtonPrimary from "shared/Button/ButtonPrimary";
-import ButtonSecondary from "shared/Button/ButtonSecondary";
 
 function VenueListing({ heading }: { heading?: string }) {
   const [data, setData] = useState([]);

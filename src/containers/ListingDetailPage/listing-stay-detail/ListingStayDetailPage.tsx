@@ -1,27 +1,14 @@
-import React, { Fragment, useEffect, useState } from "react";
-import StartRating from "components/StartRating/StartRating";
-import Avatar from "shared/Avatar/Avatar";
-import Badge from "shared/Badge/Badge";
-import LikeSaveBtns from "components/LikeSaveBtns";
-import SectionDateRange from "../SectionDateRange";
-import StayDatesRangeInput from "./StayDatesRangeInput";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Amenities_demos, PHOTOS } from "./constant";
-import { Dialog, Transition } from "@headlessui/react";
-import {
-  ArrowRightIcon,
-  ChartBarIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/24/outline";
-import ButtonSecondary from "shared/Button/ButtonSecondary";
-import ButtonClose from "shared/ButtonClose/ButtonClose";
-import ButtonCircle from "shared/Button/ButtonCircle";
-import Input from "shared/Input/Input";
+import { ChartBarIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import DetailPagetLayout from "../Layout";
-import GuestsInput from "./GuestsInput";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Select from "shared/Select/Select";
+import FlightDateRangeInput from "components/HeroSearchForm/(flight-search-form)/FlightDateRangeInput";
+import TimeInput from "components/HeroSearchForm/TimeInput";
+import DurationInput from "components/HeroSearchForm/DurationInput";
 
 const StayDetailPageContainer = ({ data }: { data: any }) => {
   //
@@ -124,126 +111,6 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
     );
   };
 
-  const renderMotalPricing = () => {
-    return (
-      <Transition appear show={isOpenModalPricing} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-50 overflow-y-auto"
-          onClose={() => setIsOpenModalPricing(false)}
-        >
-          <div className="min-h-screen px-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
-            </Transition.Child>
-
-            {/* This element is to trick the browser into centering the modal contents. */}
-            <span
-              className="inline-block h-screen align-middle"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <div className="inline-block py-8 h-screen w-full max-w-4xl">
-                <div className="inline-flex pb-2 flex-col w-full text-left align-middle transition-all transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl h-full">
-                  <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
-                    <h3
-                      className="text-lg font-medium leading-6 text-gray-900"
-                      id="headlessui-dialog-title-70"
-                    >
-                      Amenities
-                    </h3>
-                    <span className="absolute left-3 top-3">
-                      <ButtonClose
-                        onClick={() => setIsOpenModalPricing(false)}
-                      />
-                    </span>
-                  </div>
-                  <div className="px-8 mt-4 overflow-auto text-neutral-700 dark:text-neutral-300">
-                    {data.courts.map((d: any) => (
-                      <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 mb-5">
-                        <div className="flex gap-4 items-center">
-                          <ChartBarIcon className="w-7 h-7" />
-                          {d.court_id.name}
-                        </div>
-                        <div className="w-20 border-b my-3 border-neutral-200 dark:border-neutral-700"></div>
-
-                        <p>
-                          {Object.entries(d.price).map((price: any) => {
-                            if (price[0] !== "_id") {
-                              return (
-                                <>
-                                  {price[1].length > 0 && (
-                                    <p>
-                                      <div className="capitalize">
-                                        {" "}
-                                        {price[0]}
-                                      </div>
-                                      {price[1].map((res: any) => (
-                                        <div className="flex gap-2 px-5 py-2">
-                                          <p>
-                                            {new Date(res.time_from)
-                                              .getUTCHours()
-                                              .toString()
-                                              .padStart(2, "0")}
-                                            :
-                                            {new Date(res.time_from)
-                                              .getUTCMinutes()
-                                              .toString()
-                                              .padStart(2, "0")}
-                                          </p>
-                                          <p>-</p>
-                                          <p>
-                                            {new Date(res.time_to)
-                                              .getUTCHours()
-                                              .toString()
-                                              .padStart(2, "0")}
-                                            :
-                                            {new Date(res.time_to)
-                                              .getUTCMinutes()
-                                              .toString()
-                                              .padStart(2, "0")}
-                                          </p>
-                                          <div>:</div>
-                                          <p>{res.amount} per Hour</p>
-                                        </div>
-                                      ))}
-                                    </p>
-                                  )}
-                                </>
-                              );
-                            }
-                          })}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition>
-    );
-  };
-
   const renderSection4 = () => {
     return (
       <div className="listingSection__wrap">
@@ -281,8 +148,63 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
           <div>
             <h2 className="text-2xl font-semibold">Pricing</h2>
           </div>
+          <div className="mt-4 overflow-auto text-neutral-700 dark:text-neutral-300">
+            {data.courts.map((d: any) => (
+              <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 mb-5">
+                <div className="flex gap-4 items-center">
+                  <ChartBarIcon className="w-7 h-7" />
+                  {d.court_id.name}
+                </div>
+                <div className="w-20 border-b my-3 border-neutral-200 dark:border-neutral-700"></div>
+
+                <p>
+                  {Object.entries(d.price).map((price: any) => {
+                    if (price[0] !== "_id") {
+                      return (
+                        <>
+                          {price[1].length > 0 && (
+                            <p>
+                              <div className="capitalize"> {price[0]}</div>
+                              {price[1].map((res: any) => (
+                                <div className="flex gap-2 px-5 py-2">
+                                  <p>
+                                    {new Date(res.time_from)
+                                      .getUTCHours()
+                                      .toString()
+                                      .padStart(2, "0")}
+                                    :
+                                    {new Date(res.time_from)
+                                      .getUTCMinutes()
+                                      .toString()
+                                      .padStart(2, "0")}
+                                  </p>
+                                  <p>-</p>
+                                  <p>
+                                    {new Date(res.time_to)
+                                      .getUTCHours()
+                                      .toString()
+                                      .padStart(2, "0")}
+                                    :
+                                    {new Date(res.time_to)
+                                      .getUTCMinutes()
+                                      .toString()
+                                      .padStart(2, "0")}
+                                  </p>
+                                  <div>:</div>
+                                  <p>{res.amount} per Hour</p>
+                                </div>
+                              ))}
+                            </p>
+                          )}
+                        </>
+                      );
+                    }
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-        {renderMotalPricing()}
       </>
     );
   };
@@ -345,47 +267,108 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
       </>
     );
   };
+  const location = useLocation();
+  const [sports, setSports] = useState([]);
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .then((response) => {
+        setSports(response.data.map((d: any) => d.name));
+      })
+      .catch((err) => toast.error("Something went wrong!"));
+  }, []);
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    let getLocation = queryParams.get("location");
+    let getSports = queryParams.get("sports");
+    let getDate = queryParams.get("date");
+    let getTime = queryParams.get("time");
+    let getDuration = queryParams.get("duration");
+    if (getLocation !== null) {
+      setFilteredData((prev: any) => ({ ...prev, location: getLocation }));
+    }
+    if (getSports !== null) {
+      setFilteredData((prev: any) => ({ ...prev, sports: getSports }));
+    }
+    if (getDate !== null) {
+      setFilteredData((prev: any) => ({ ...prev, date: getDate }));
+    }
+    if (getTime !== null) {
+      setFilteredData((prev: any) => ({ ...prev, time: getTime }));
+    }
+
+    if (getDuration !== null) {
+      setFilteredData((prev: any) => ({ ...prev, duration: getDuration }));
+    }
+  }, [location.search]);
+  const [filteredData, setFilteredData] = useState<{
+    date: Date | null;
+    time: string;
+    duration: string;
+    sports: string;
+  }>({
+    date: null,
+    time: "",
+    duration: "",
+    sports: "",
+  });
 
   const renderSidebar = () => {
     return (
       <div className="listingSectionSidebar__wrap shadow-xl">
-        {/* PRICE */}
-        <div className="flex justify-between">
-          <span className="text-3xl font-semibold">
-            $119
-            <span className="ml-1 text-base font-normal text-neutral-500 dark:text-neutral-400">
-              /night
-            </span>
-          </span>
-          <StartRating />
+        <h3>Choose Sports</h3>
+        <Select
+          value={filteredData.sports}
+          onChange={(e) =>
+            setFilteredData((prev) => ({ ...prev, sports: e.target.value }))
+          }
+        >
+          <option value="">Select any</option>
+          {sports.map((sport) => (
+            <option value={sport}>{sport}</option>
+          ))}
+        </Select>
+        <div className="listingSectionSidebar__wrap p-4">
+          <p>Select a Date</p>
+          <FlightDateRangeInput
+            onchange={(e) => setFilteredData((prev) => ({ ...prev, date: e }))}
+            selectsRange={false}
+            fieldClassName="py-2"
+            value={filteredData.date}
+            caption={false}
+          />
+          <p>Select a start time and duration</p>
+          <TimeInput
+            caption={false}
+            padding="p-0"
+            placeHolder="Time"
+            value={filteredData.time}
+            onChange={(e) => setFilteredData((prev) => ({ ...prev, time: e }))}
+          />
+          <DurationInput
+            value={filteredData.duration}
+            onchange={(e) =>
+              setFilteredData((prev) => ({ ...prev, duration: e }))
+            }
+            fieldClassName="p-0"
+            placeHolder="Duration"
+            caption={false}
+          />
+
+          <p>Select your preferred Court</p>
+          <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
+            <div className="flex justify-between">
+              Court Name
+              <button className="border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md">
+                Add
+              </button>
+            </div>
+            <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
+          </div>
         </div>
-
-        {/* FORM */}
-        <form className="flex flex-col border border-neutral-200 dark:border-neutral-700 rounded-3xl ">
-          <StayDatesRangeInput className="flex-1 z-[11]" />
-          <div className="w-full border-b border-neutral-200 dark:border-neutral-700"></div>
-          <GuestsInput className="flex-1" />
-        </form>
-
-        {/* SUM */}
-        <div className="flex flex-col space-y-4">
-          <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
-            <span>$119 x 3 night</span>
-            <span>$357</span>
-          </div>
-          <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
-            <span>Service charge</span>
-            <span>$0</span>
-          </div>
-          <div className="border-b border-neutral-200 dark:border-neutral-700"></div>
-          <div className="flex justify-between font-semibold">
-            <span>Total</span>
-            <span>$199</span>
-          </div>
-        </div>
-
-        {/* SUBMIT */}
-        <ButtonPrimary href={"/checkout"}>Reserve</ButtonPrimary>
+        <ButtonPrimary disabled={true} onClick={() => console.log("clic")}>
+          Reserve
+        </ButtonPrimary>
       </div>
     );
   };
@@ -476,7 +459,7 @@ export default function ListingStayDetailPage() {
       .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/${id}`)
       .then((res) => setData(res.data))
       .catch(() => toast.error("Something went wrong!"));
-  }, []);
+  }, [id]);
   return (
     <DetailPagetLayout>
       {data && <StayDetailPageContainer data={data} />}

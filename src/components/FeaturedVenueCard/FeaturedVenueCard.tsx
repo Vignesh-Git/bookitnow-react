@@ -3,12 +3,13 @@ import GallerySlider from "components/GallerySlider/GallerySlider";
 import { DEMO_STAY_LISTINGS } from "data/listings";
 import { StayDataType } from "data/types";
 import StartRating from "components/StartRating/StartRating";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import BtnLikeIcon from "components/BtnLikeIcon/BtnLikeIcon";
 import SaleOffBadge from "components/SaleOffBadge/SaleOffBadge";
 import Badge from "shared/Badge/Badge";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
+import { useSearchParam } from "react-use";
 
 export interface StayCardProps {
   className?: string;
@@ -23,6 +24,8 @@ const FeaturedVenueCard: FC<StayCardProps> = ({
   className = "",
   data = DEMO_DATA,
 }) => {
+  let location = useLocation();
+
   const renderSliderGallery = () => {
     return (
       <div className="relative w-full">
@@ -83,7 +86,9 @@ const FeaturedVenueCard: FC<StayCardProps> = ({
         </div>
         <div className="w-100 border-b border-neutral-100 dark:border-neutral-800"></div>
         <div className="flex justify-between items-center">
-          <ButtonSecondary href={`/venue/${data._id}`}>Details</ButtonSecondary>
+          <ButtonSecondary href={`/venue/${data._id}${location.search}`}>
+            Details
+          </ButtonSecondary>
           <ButtonPrimary>Book</ButtonPrimary>
 
           {/* <span className="text-base font-semibold">

@@ -7,6 +7,15 @@ import { useTimeoutFn } from "react-use";
 import StaySearchForm from "./(stay-search-form)/StaySearchForm";
 import CarsSearchForm from "./(car-search-form)/CarsSearchForm";
 import FlightSearchForm from "./(flight-search-form)/FlightSearchForm";
+import { useNavigate } from "react-router-dom";
+
+export interface IData {
+  location: string;
+  sports: string;
+  date: Date | null;
+  time: string;
+  duration: string;
+}
 
 const HeroSearchForm2Mobile = () => {
   const [showModal, setShowModal] = useState(false);
@@ -55,7 +64,14 @@ const HeroSearchForm2Mobile = () => {
       </button>
     );
   };
-
+  const [data, setData] = useState<IData>({
+    location: "",
+    sports: "",
+    date: null,
+    time: "",
+    duration: "",
+  });
+  const navigate = useNavigate();
   return (
     <div className="HeroSearchForm2Mobile">
       {renderButtonOpenModal()}
@@ -87,7 +103,7 @@ const HeroSearchForm2Mobile = () => {
 
                       <div className="flex-1 mt-8 pt-3 px-1.5 sm:px-4 flex overflow-hidden w-full">
                         <div className="transition-opacity animate-[myblur_0.4s_ease-in-out] w-full">
-                          <FlightSearchForm />
+                          <FlightSearchForm data={data} setData={setData} />
                         </div>
                       </div>
                       <div className="px-4 py-3 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-700 flex justify-between">
@@ -97,12 +113,35 @@ const HeroSearchForm2Mobile = () => {
                           onClick={() => {
                             setShowDialog(false);
                             resetIsShowingDialog();
+                            setData({
+                              date: null,
+                              duration: "",
+                              location: "",
+                              sports: "",
+                              time: "",
+                            });
                           }}
                         >
                           Clear all
                         </button>
                         <ButtonSubmit
                           onClick={() => {
+                            var queryParams = Object.keys(data)
+                              .map((key) => {
+                                const value = data[key as keyof IData];
+
+                                if (value !== "" && value !== null) {
+                                  return `${key}=${encodeURIComponent(
+                                    String(value)
+                                  )}`;
+                                } else {
+                                  return null;
+                                }
+                              })
+                              .filter((param) => param !== null)
+                              .join("&");
+
+                            navigate(`/filtered-venue?${queryParams}`);
                             closeModal();
                           }}
                         />
