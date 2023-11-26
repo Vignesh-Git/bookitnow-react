@@ -18,6 +18,7 @@ export interface FlightDateRangeInputProps {
   onchange?: (date: Date | null) => void;
   value?: Date | null;
   caption?: boolean;
+  filterDate?: (date: Date) => boolean;
 }
 
 const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
@@ -28,6 +29,7 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
   onchange,
   value,
   caption = true,
+  filterDate = (date) => true,
 }) => {
   console.log(typeof value, value);
   const onChangeRangeDate = (dates: [Date | null, Date | null]) => {
@@ -114,10 +116,16 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
                 <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-neutral-800 p-8">
                   {selectsRange ? (
                     <DatePicker
-                      selected={value}
+                      selected={
+                        typeof value === "string" ? new Date(value) : value
+                      }
                       onChange={onChangeRangeDate}
-                      startDate={value}
-                      endDate={value}
+                      startDate={
+                        typeof value === "string" ? new Date(value) : value
+                      }
+                      endDate={
+                        typeof value === "string" ? new Date(value) : value
+                      }
                       selectsRange
                       monthsShown={2}
                       showPopperArrow={false}
@@ -131,11 +139,14 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
                     />
                   ) : (
                     <DatePicker
-                      selected={value}
+                      selected={
+                        typeof value === "string" ? new Date(value) : value
+                      }
                       onChange={(date) => {
                         console.log(date);
                         if (onchange) onchange(date);
                       }}
+                      filterDate={filterDate}
                       monthsShown={2}
                       shouldCloseOnSelect={true}
                       showPopperArrow={false}

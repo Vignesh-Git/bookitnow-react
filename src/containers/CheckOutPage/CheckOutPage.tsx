@@ -1,6 +1,6 @@
 import { Tab } from "@headlessui/react";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import React, { FC, Fragment, useState } from "react";
+import { MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import React, { FC, Fragment, useEffect, useState } from "react";
 import visaPng from "images/vis.png";
 import mastercardPng from "images/mastercard.svg";
 import { GuestsObject } from "components/HeroSearchForm/type";
@@ -14,6 +14,13 @@ import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import FlightSearchForm from "components/HeroSearchForm/(flight-search-form)/FlightSearchForm";
+import { useLocation } from "react-router-dom";
+import Select from "shared/Select/Select";
+import FlightDateRangeInput from "components/HeroSearchForm/(flight-search-form)/FlightDateRangeInput";
+import TimeInput from "components/HeroSearchForm/TimeInput";
+import DurationInput from "components/HeroSearchForm/DurationInput";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export interface CheckOutPagePageMainProps {
   className?: string;
@@ -22,44 +29,212 @@ export interface CheckOutPagePageMainProps {
 const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
   className = "",
 }) => {
-  const [startDate] = useState<Date | null>(new Date("2023/02/06"));
-  const [endDate] = useState<Date | null>(new Date("2023/02/23"));
-
-  const [guests] = useState<GuestsObject>({
-    guestAdults: 2,
-    guestChildren: 1,
-    guestInfants: 1,
+  const location = useLocation();
+  const [filteredData, setFilteredData] = useState<{
+    date: Date | null;
+    time: string;
+    duration: string;
+    sports: string;
+    courts: string[];
+  }>({
+    date: null,
+    time: "",
+    duration: "",
+    sports: "",
+    courts: [],
   });
 
+  const [days, setDays] = useState<number[]>([]);
+
+  const [data, setData] = useState<any>();
+  const router = useLocation();
+  const id = router.pathname.split("/")[router.pathname.split("/").length - 1];
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/${id}`)
+      .then((res) => setData(res.data))
+      .catch(() => toast.error("Something went wrong!"));
+  }, [id]);
+
+  useEffect(() => {
+    data &&
+      setDays(
+        data.available_days.map((d: string) => {
+          switch (d) {
+            case "sunday":
+              return 0;
+            case "monday":
+              return 1;
+            case "tuesday":
+              return 2;
+            case "wednesday":
+              return 3;
+            case "thursday":
+              return 4;
+            case "friday":
+              return 5;
+            case "saturday":
+              return 6;
+          }
+        })
+      );
+  }, [data]);
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    let getLocation = queryParams.get("location");
+    let getSports = queryParams.get("sports");
+    let getDate = queryParams.get("date");
+    let getTime = queryParams.get("time");
+    let getDuration = queryParams.get("duration");
+    let getCourts = queryParams.get("courts")?.split(",");
+    if (getLocation !== null) {
+      setFilteredData((prev: any) => ({ ...prev, location: getLocation }));
+    }
+    if (getCourts !== null) {
+      setFilteredData((prev: any) => ({ ...prev, courts: getCourts }));
+    }
+    if (getSports !== null) {
+      setFilteredData((prev: any) => ({ ...prev, sports: getSports }));
+    }
+    if (getDate !== null) {
+      setFilteredData((prev: any) => ({ ...prev, date: getDate }));
+    }
+    if (getTime !== null) {
+      setFilteredData((prev: any) => ({ ...prev, time: getTime }));
+    }
+
+    if (getDuration !== null) {
+      setFilteredData((prev: any) => ({ ...prev, duration: getDuration }));
+    }
+  }, [location.search]);
+  const [sports, setSports] = useState([]);
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .then((response) => {
+        setSports(response.data.map((d: any) => d.name));
+      })
+      .catch((err) => toast.error("Something went wrong!"));
+  }, []);
   const renderSidebar = () => {
     return (
-      <div className="w-full flex flex-col sm:rounded-2xl lg:border border-neutral-200 dark:border-neutral-700 space-y-6 sm:space-y-8 px-0 sm:p-6 xl:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center">
-          <div className="flex-shrink-0 w-full sm:w-40">
-            <div className=" aspect-w-4 aspect-h-3 sm:aspect-h-4 rounded-2xl overflow-hidden">
-              <img
-                alt=""
-                className="absolute inset-0 object-cover"
-                sizes="200px"
-                src="https://images.pexels.com/photos/6373478/pexels-photo-6373478.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-              />
-            </div>
+      <div className="listingSectionSidebar__wrap shadow-xl">
+        <h3>Choose Sports</h3>
+        <Select
+          value={filteredData.sports}
+          onChange={(e) =>
+            setFilteredData((prev) => ({ ...prev, sports: e.target.value }))
+          }
+        >
+          <option value="">Select any</option>
+          {sports.map((sport) => (
+            <option value={sport}>{sport}</option>
+          ))}
+        </Select>
+        <div className="listingSectionSidebar__wrap p-4">
+          <p>Select a Date</p>
+          <FlightDateRangeInput
+            onchange={(e) => setFilteredData((prev) => ({ ...prev, date: e }))}
+            selectsRange={false}
+            fieldClassName="py-2"
+            value={filteredData.date}
+            caption={false}
+            filterDate={(date: Date) => {
+              return days.includes(date.getDay());
+            }}
+          />
+          <p>Select a start time and duration</p>
+          <TimeInput
+            caption={false}
+            padding="p-0"
+            placeHolder="Time"
+            value={filteredData.time}
+            onChange={(e) => setFilteredData((prev) => ({ ...prev, time: e }))}
+          />
+          <DurationInput
+            value={filteredData.duration}
+            onchange={(e) =>
+              setFilteredData((prev) => ({ ...prev, duration: e }))
+            }
+            fieldClassName="p-0"
+            placeHolder="Duration"
+            caption={false}
+          />
+
+          <p>Select your preferred Court</p>
+          <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
+            {data &&
+              data.courts.map((d: any) => (
+                <div className="flex justify-between">
+                  {d.court_id.name}
+                  <button
+                    onClick={() =>
+                      filteredData.courts.includes(d.court_id._id)
+                        ? setFilteredData((prev) => {
+                            let index = filteredData.courts.indexOf(
+                              d.court_id._id
+                            );
+                            if (index !== -1) {
+                              filteredData.courts.splice(index, 1);
+                            }
+
+                            return { ...prev, courts: [...prev.courts] };
+                          })
+                        : setFilteredData((prev) => {
+                            prev.courts.push(d.court_id._id);
+                            return { ...prev, courts: [...prev.courts] };
+                          })
+                    }
+                    className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
+                      filteredData.courts.includes(d.court_id._id)
+                        ? "bg-[blue] text-[white]"
+                        : ""
+                    }`}
+                  >
+                    {filteredData.courts.includes(d.court_id._id)
+                      ? "Added"
+                      : "Add"}
+                  </button>
+                </div>
+              ))}
+
+            <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
           </div>
-          <div className="py-5 sm:px-5 space-y-3">
-            <div>
-              <span className="text-sm text-neutral-500 dark:text-neutral-400 line-clamp-1">
-                Hotel room in Tokyo, Jappan
-              </span>
-              <span className="text-base font-medium mt-1 block">
-                The Lounge & Bar
-              </span>
-            </div>
-            <span className="block  text-sm text-neutral-500 dark:text-neutral-400">
-              2 beds · 2 baths
-            </span>
-            <div className="w-10 border-b border-neutral-200  dark:border-neutral-700"></div>
-            <StartRating />
-          </div>
+          {data &&
+            data.courts.filter((d: any) => {
+              return filteredData.courts.includes(d.court_id._id);
+            }).length > 0 && (
+              <>
+                <div>Selected Court</div>
+                <div>
+                  {data.courts
+                    .filter((d: any) => {
+                      return filteredData.courts.includes(d.court_id._id);
+                    })
+                    .map((d: any) => (
+                      <div className="flex justify-between">
+                        <p>{d.court_id.name}</p>
+                        <MinusCircleIcon
+                          color="red"
+                          className="w-5 cursor-pointer"
+                          onClick={() =>
+                            setFilteredData((prev) => {
+                              let index = filteredData.courts.indexOf(
+                                d.court_id._id
+                              );
+                              if (index !== -1) {
+                                filteredData.courts.splice(index, 1);
+                              }
+
+                              return { ...prev, courts: [...prev.courts] };
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+                </div>
+              </>
+            )}
         </div>
         <div className="flex flex-col space-y-4">
           <h3 className="text-2xl font-semibold">Price detail</h3>
@@ -189,9 +364,9 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
 
   return (
     <div className={`nc-CheckOutPagePageMain ${className}`}>
-      <main className="container mt-11 mb-24 lg:mb-32 flex flex-col-reverse lg:flex-row">
+      <main className="container mt-11 mb-24 lg:mb-32 flex flex-col-reverse gap-10 lg:flex-row">
         <div className="w-full lg:w-3/5 xl:w-2/3 lg:pr-10 ">{renderMain()}</div>
-        <div className="hidden lg:block flex-grow">{renderSidebar()}</div>
+        <div className=" flex-grow">{renderSidebar()}</div>
       </main>
     </div>
   );

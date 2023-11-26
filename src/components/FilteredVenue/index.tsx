@@ -24,7 +24,7 @@ function FilteredVenue() {
       <FlightSearchForm />
       <div className="grid lg:grid-cols-4 grid-cols-1 gap-4 my-5">
         {filteredList.map((d: any) => (
-          <FeaturedVenueCard key={d._id} data={d} />
+          <FeaturedVenueCard key={d._id} data={d} show={false} />
         ))}
       </div>
     </div>

@@ -15,6 +15,7 @@ export interface StayCardProps {
   className?: string;
   data?: any;
   size?: "default" | "small";
+  show?: boolean;
 }
 
 const DEMO_DATA = DEMO_STAY_LISTINGS[0];
@@ -23,6 +24,7 @@ const FeaturedVenueCard: FC<StayCardProps> = ({
   size = "default",
   className = "",
   data = DEMO_DATA,
+  show = true,
 }) => {
   let location = useLocation();
 
@@ -86,10 +88,14 @@ const FeaturedVenueCard: FC<StayCardProps> = ({
         </div>
         <div className="w-100 border-b border-neutral-100 dark:border-neutral-800"></div>
         <div className="flex justify-between items-center">
-          <ButtonSecondary href={`/venue/${data._id}${location.search}`}>
-            Details
-          </ButtonSecondary>
-          <ButtonPrimary>Book</ButtonPrimary>
+          {show && (
+            <ButtonSecondary href={`/venue/${data._id}${location.search}`}>
+              Details
+            </ButtonSecondary>
+          )}
+          <ButtonPrimary href={`/venue/${data._id}${location.search}`}>
+            Book
+          </ButtonPrimary>
 
           {/* <span className="text-base font-semibold">
           

@@ -5,14 +5,15 @@ import converSelectedDateToString from "utils/converSelectedDateToString";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import FlightSearchForm from "components/HeroSearchForm/(flight-search-form)/FlightSearchForm";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { MinusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Select from "shared/Select/Select";
 import FlightDateRangeInput from "components/HeroSearchForm/(flight-search-form)/FlightDateRangeInput";
 import TimeInput from "components/HeroSearchForm/TimeInput";
 import DurationInput from "components/HeroSearchForm/DurationInput";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import tokenHandler from "utils/tokenHandler";
 
 const MobileFooterSticky = () => {
   const [showModal, setShowModal] = useState(false);
@@ -22,11 +23,13 @@ const MobileFooterSticky = () => {
     time: string;
     duration: string;
     sports: string;
+    courts: string[];
   }>({
     date: null,
     time: "",
     duration: "",
     sports: "",
+    courts: [],
   });
   const location = useLocation();
   const [sports, setSports] = useState([]);
@@ -62,6 +65,34 @@ const MobileFooterSticky = () => {
       setFilteredData((prev: any) => ({ ...prev, duration: getDuration }));
     }
   }, [location.search]);
+
+  const [loginState, setLoginState] = useState({
+    isStateFinalized: false,
+    isLoggedIn: false,
+    isAdmin: false,
+  });
+  const [data, setData] = useState<any>();
+  const router = useLocation();
+  const id = router.pathname.split("/")[router.pathname.split("/").length - 1];
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/${id}`)
+      .then((res) => setData(res.data))
+      .catch(() => toast.error("Something went wrong!"));
+  }, [id]);
+  const routers = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    let token = tokenHandler.searchInCookie("bint");
+    if (token) {
+      let decoded = tokenHandler.jwtDecode(token).payload;
+      setLoginState({
+        isStateFinalized: true,
+        isLoggedIn: tokenHandler.isTokenValid(decoded.exp),
+        isAdmin: ["admin"].includes(decoded.role.toLowerCase()),
+      });
+    }
+  }, [loginState.isStateFinalized]);
   return (
     <div className="block lg:hidden fixed bottom-0 inset-x-0 py-2 sm:py-3 bg-white dark:bg-neutral-800 border-t border-neutral-200 dark:border-neutral-6000 z-40">
       <div className="container flex items-center justify-end">
@@ -159,16 +190,159 @@ const MobileFooterSticky = () => {
 
                             <p>Select your preferred Court</p>
                             <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-                              <div className="flex justify-between">
-                                Court Name
-                                <button className="border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md">
-                                  Add
-                                </button>
-                              </div>
+                              {data &&
+                                data.courts.map((d: any) => (
+                                  <div className="flex justify-between">
+                                    {d.court_id.name}
+                                    <button
+                                      onClick={() =>
+                                        filteredData.courts.includes(
+                                          d.court_id._id
+                                        )
+                                          ? setFilteredData((prev) => {
+                                              let index =
+                                                filteredData.courts.indexOf(
+                                                  d.court_id._id
+                                                );
+                                              if (index !== -1) {
+                                                filteredData.courts.splice(
+                                                  index,
+                                                  1
+                                                );
+                                              }
+
+                                              return {
+                                                ...prev,
+                                                courts: [...prev.courts],
+                                              };
+                                            })
+                                          : setFilteredData((prev) => {
+                                              prev.courts.push(d.court_id._id);
+                                              return {
+                                                ...prev,
+                                                courts: [...prev.courts],
+                                              };
+                                            })
+                                      }
+                                      className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
+                                        filteredData.courts.includes(
+                                          d.court_id._id
+                                        )
+                                          ? "bg-[blue] text-[white]"
+                                          : ""
+                                      }`}
+                                    >
+                                      {filteredData.courts.includes(
+                                        d.court_id._id
+                                      )
+                                        ? "Added"
+                                        : "Add"}
+                                    </button>
+                                  </div>
+                                ))}
+
                               <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
                             </div>
+                            {data &&
+                              data.courts.filter((d: any) => {
+                                return filteredData.courts.includes(
+                                  d.court_id._id
+                                );
+                              }).length > 0 && (
+                                <>
+                                  <div>Selected Court</div>
+                                  <div>
+                                    {data.courts
+                                      .filter((d: any) => {
+                                        return filteredData.courts.includes(
+                                          d.court_id._id
+                                        );
+                                      })
+                                      .map((d: any) => (
+                                        <div className="flex justify-between">
+                                          <p>{d.court_id.name}</p>
+                                          <MinusCircleIcon
+                                            color="red"
+                                            className="w-5 cursor-pointer"
+                                            onClick={() =>
+                                              setFilteredData((prev) => {
+                                                let index =
+                                                  filteredData.courts.indexOf(
+                                                    d.court_id._id
+                                                  );
+                                                if (index !== -1) {
+                                                  filteredData.courts.splice(
+                                                    index,
+                                                    1
+                                                  );
+                                                }
+
+                                                return {
+                                                  ...prev,
+                                                  courts: [...prev.courts],
+                                                };
+                                              })
+                                            }
+                                          />
+                                        </div>
+                                      ))}
+                                  </div>
+                                </>
+                              )}
                           </div>
-                          <ButtonPrimary disabled={true} href={"/checkout"}>
+                          <ButtonPrimary
+                            onClick={() => {
+                              const queryParams = Object.keys(filteredData)
+                                .map((key) => {
+                                  if (
+                                    Array.isArray(
+                                      filteredData[
+                                        key as keyof {
+                                          date: Date | null;
+                                          time: string;
+                                          duration: string;
+                                          sports: string;
+                                          courts: string[];
+                                        }
+                                      ]
+                                    )
+                                  ) {
+                                    // If the value is an array, join its elements
+                                    return `${key}=${filteredData[
+                                      key as keyof { courts: string[] }
+                                    ].join(",")}`;
+                                  } else {
+                                    return `${key}=${encodeURIComponent(
+                                      String(
+                                        filteredData[
+                                          key as keyof {
+                                            date: Date | null;
+                                            time: string;
+                                            duration: string;
+                                            sports: string;
+                                            courts: string[];
+                                          }
+                                        ]
+                                      )
+                                    )}`;
+                                  }
+                                })
+                                .join("&");
+
+                              console.log(queryParams);
+                              loginState.isLoggedIn
+                                ? navigate(
+                                    `/checkout/${
+                                      routers.pathname.split("/")[
+                                        routers.pathname.split("/").length - 1
+                                      ]
+                                    }?${queryParams}`
+                                  )
+                                : navigate(
+                                    `/login?callBack=${location.pathname}`
+                                  );
+                            }}
+                          >
                             Reserve
                           </ButtonPrimary>
                         </div>

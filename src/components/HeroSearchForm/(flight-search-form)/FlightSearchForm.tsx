@@ -21,20 +21,6 @@ export interface IData {
   time: string;
   duration: string;
 }
-const flightClass = [
-  {
-    name: "Economy",
-    href: "##",
-  },
-  {
-    name: "Business",
-    href: "##",
-  },
-  {
-    name: "Multiple",
-    href: "##",
-  },
-];
 
 export type TypeDropOffLocationType = "roundTrip" | "oneWay" | "";
 
@@ -75,9 +61,6 @@ const FlightSearchForm: FC<FlightSearchFormProps> = () => {
       setData((prev: any) => ({ ...prev, duration: getDuration }));
     }
   }, [location.search]);
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   const renderForm = () => {
     return (

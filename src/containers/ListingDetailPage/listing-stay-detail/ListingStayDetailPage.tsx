@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChartBarIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
+import {
+  ChartBarIcon,
+  MinusCircleIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/24/outline";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import DetailPagetLayout from "../Layout";
 import axios from "axios";
@@ -9,6 +13,7 @@ import Select from "shared/Select/Select";
 import FlightDateRangeInput from "components/HeroSearchForm/(flight-search-form)/FlightDateRangeInput";
 import TimeInput from "components/HeroSearchForm/TimeInput";
 import DurationInput from "components/HeroSearchForm/DurationInput";
+import tokenHandler from "utils/tokenHandler";
 
 const StayDetailPageContainer = ({ data }: { data: any }) => {
   //
@@ -17,6 +22,7 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
 
   const thisPathname = useLocation().pathname;
   const router = useNavigate();
+  const routers = useLocation();
 
   const handleOpenModalImageGallery = () => {
     router(`${thisPathname}/?modal=PHOTO_TOUR_SCROLLABLE`);
@@ -277,6 +283,7 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
       })
       .catch((err) => toast.error("Something went wrong!"));
   }, []);
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     let getLocation = queryParams.get("location");
@@ -301,17 +308,64 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
       setFilteredData((prev: any) => ({ ...prev, duration: getDuration }));
     }
   }, [location.search]);
+
+  const [loginState, setLoginState] = useState({
+    isStateFinalized: false,
+    isLoggedIn: false,
+    isAdmin: false,
+  });
+
+  useEffect(() => {
+    let token = tokenHandler.searchInCookie("bint");
+    if (token) {
+      let decoded = tokenHandler.jwtDecode(token).payload;
+      setLoginState({
+        isStateFinalized: true,
+        isLoggedIn: tokenHandler.isTokenValid(decoded.exp),
+        isAdmin: ["admin"].includes(decoded.role.toLowerCase()),
+      });
+    }
+  }, [loginState.isStateFinalized]);
+
   const [filteredData, setFilteredData] = useState<{
     date: Date | null;
     time: string;
     duration: string;
     sports: string;
+    courts: string[];
   }>({
     date: null,
     time: "",
     duration: "",
     sports: "",
+    courts: [],
   });
+  const [days, setDays] = useState<number[]>([]);
+
+  useEffect(() => {
+    setDays(
+      data.available_days.map((d: string) => {
+        switch (d) {
+          case "sunday":
+            return 0;
+          case "monday":
+            return 1;
+          case "tuesday":
+            return 2;
+          case "wednesday":
+            return 3;
+          case "thursday":
+            return 4;
+          case "friday":
+            return 5;
+          case "saturday":
+            return 6;
+        }
+      })
+    );
+  }, [data]);
+
+  const navigate = useNavigate();
 
   const renderSidebar = () => {
     return (
@@ -336,6 +390,9 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
             fieldClassName="py-2"
             value={filteredData.date}
             caption={false}
+            filterDate={(date: Date) => {
+              return days.includes(date.getDay());
+            }}
           />
           <p>Select a start time and duration</p>
           <TimeInput
@@ -357,16 +414,128 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
 
           <p>Select your preferred Court</p>
           <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-            <div className="flex justify-between">
-              Court Name
-              <button className="border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md">
-                Add
-              </button>
-            </div>
+            {data.courts.map((d: any) => (
+              <div className="flex justify-between">
+                {d.court_id.name}
+                <button
+                  onClick={() =>
+                    filteredData.courts.includes(d.court_id._id)
+                      ? setFilteredData((prev) => {
+                          let index = filteredData.courts.indexOf(
+                            d.court_id._id
+                          );
+                          if (index !== -1) {
+                            filteredData.courts.splice(index, 1);
+                          }
+
+                          return { ...prev, courts: [...prev.courts] };
+                        })
+                      : setFilteredData((prev) => {
+                          prev.courts.push(d.court_id._id);
+                          return { ...prev, courts: [...prev.courts] };
+                        })
+                  }
+                  className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
+                    filteredData.courts.includes(d.court_id._id)
+                      ? "bg-[blue] text-[white]"
+                      : ""
+                  }`}
+                >
+                  {filteredData.courts.includes(d.court_id._id)
+                    ? "Added"
+                    : "Add"}
+                </button>
+              </div>
+            ))}
             <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
           </div>
+          {data.courts.filter((d: any) => {
+            return filteredData.courts.includes(d.court_id._id);
+          }).length > 0 && (
+            <>
+              <div>Selected Court</div>
+              <div>
+                {data.courts
+                  .filter((d: any) => {
+                    return filteredData.courts.includes(d.court_id._id);
+                  })
+                  .map((d: any) => (
+                    <div className="flex justify-between">
+                      <p>{d.court_id.name}</p>
+                      <MinusCircleIcon
+                        color="red"
+                        className="w-5 cursor-pointer"
+                        onClick={() =>
+                          setFilteredData((prev) => {
+                            let index = filteredData.courts.indexOf(
+                              d.court_id._id
+                            );
+                            if (index !== -1) {
+                              filteredData.courts.splice(index, 1);
+                            }
+
+                            return { ...prev, courts: [...prev.courts] };
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+              </div>
+            </>
+          )}
         </div>
-        <ButtonPrimary disabled={true} onClick={() => console.log("clic")}>
+        <ButtonPrimary
+          onClick={() => {
+            console.log(filteredData);
+            const queryParams = Object.keys(filteredData)
+              .map((key) => {
+                if (
+                  Array.isArray(
+                    filteredData[
+                      key as keyof {
+                        date: Date | null;
+                        time: string;
+                        duration: string;
+                        sports: string;
+                        courts: string[];
+                      }
+                    ]
+                  )
+                ) {
+                  // If the value is an array, join its elements
+                  return `${key}=${filteredData[
+                    key as keyof { courts: string[] }
+                  ].join(",")}`;
+                } else {
+                  return `${key}=${encodeURIComponent(
+                    String(
+                      filteredData[
+                        key as keyof {
+                          date: Date | null;
+                          time: string;
+                          duration: string;
+                          sports: string;
+                          courts: string[];
+                        }
+                      ]
+                    )
+                  )}`;
+                }
+              })
+              .join("&");
+
+            console.log(queryParams);
+            loginState.isLoggedIn
+              ? navigate(
+                  `/checkout/${
+                    routers.pathname.split("/")[
+                      routers.pathname.split("/").length - 1
+                    ]
+                  }?${queryParams}`
+                )
+              : navigate(`/login?callBack=${location.pathname}`);
+          }}
+        >
           Reserve
         </ButtonPrimary>
       </div>
@@ -460,6 +629,7 @@ export default function ListingStayDetailPage() {
       .then((res) => setData(res.data))
       .catch(() => toast.error("Something went wrong!"));
   }, [id]);
+
   return (
     <DetailPagetLayout>
       {data && <StayDetailPageContainer data={data} />}

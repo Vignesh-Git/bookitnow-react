@@ -4,7 +4,7 @@ import twitterSvg from "images/Twitter.svg";
 import googleSvg from "images/Google.svg";
 import { Helmet } from "react-helmet";
 import Input from "shared/Input/Input";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import axios, { isCancel, AxiosError } from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -56,6 +56,8 @@ const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
     }
   }, [loginState.isStateFinalized]);
 
+  const location = useLocation();
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsLoading(true);
@@ -70,7 +72,11 @@ const PageLogin: FC<PageLoginProps> = ({ className = "" }) => {
       .then((response) => {
         setIsLoading(false);
         tokenHandler.setToCookie("bint", response.data.token);
-        navigate("/");
+        const queryParams = new URLSearchParams(location.search);
+
+        queryParams.get("callBack") !== null
+          ? navigate(`${queryParams.get("callBack")}`)
+          : navigate("/");
         window.location.reload();
       })
       .catch((err) => {
