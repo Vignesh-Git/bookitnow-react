@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 export interface FormValues {
   name: string;
   website: string;
@@ -93,7 +92,12 @@ function CreationForm() {
           formik.setFieldValue("available_days", res.data.available_days);
           formik.setFieldValue("enabled", res.data.enabled);
           formik.setFieldValue("is_featured", res.data.is_featured);
-          setCourts(res.data.courts);
+          setCourts(
+            res.data.courts.map((d: any) => ({
+              ...d,
+              sport_id: d.sport_id._id,
+            }))
+          );
         })
         .catch(() => toast.error("Something went wrong"));
     }
@@ -128,41 +132,16 @@ function CreationForm() {
     is_featured: false,
     courts: [
       {
-        court_id: "",
+        court_name: "",
+        court_code: "",
+        sport_id: "",
         number_of_courts: "",
         description: "",
         policy: "",
         hero_image: "",
         extra_images: [],
-        opening_hours: {
-          // monday: [
-          //   {
-          //     from: "",
-          //     to: "",
-          //   },
-          // ],
-          // tuesday: [],
-          // wednesday: [],
-          // thursday: [],
-          // friday: [],
-          // saturday: [],
-          // sunday: [],
-        },
-        price: {
-          // monday: [
-          //   {
-          //     time_from: "",
-          //     time_to: "",
-          //     amount: "",
-          //   },
-          // ],
-          // tuesday: [],
-          // wednesday: [],
-          // thursday: [],
-          // friday: [],
-          // saturday: [],
-          // sunday: [],
-        },
+        opening_hours: {},
+        price: {},
         enabled: true,
       },
     ],
@@ -258,7 +237,9 @@ function CreationForm() {
         console.log(availableDays, pricing);
         setCourts([
           {
-            court_id: "",
+            court_name: "",
+            court_code: "",
+            sport_id: "",
             number_of_courts: "",
             description: "",
             policy: "",
@@ -287,6 +268,7 @@ function CreationForm() {
           onBack={() => {
             setCount(1);
           }}
+          availableDays={formik.values.available_days}
           onSubmit={(e: any) => {
             queryParams.get("id")
               ? editForm({ ...data, courts })

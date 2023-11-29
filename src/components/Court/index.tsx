@@ -11,7 +11,7 @@ function CourtListing() {
 
   const GetAllCourts = () => {
     axios
-      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/sport/get_all`)
       .then((res) => setData(res.data))
       .catch((err) => console.log(err));
   };

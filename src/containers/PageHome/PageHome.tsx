@@ -16,6 +16,7 @@ import SectionClientSay from "components/SectionClientSay/SectionClientSay";
 import GallerySlider from "components/GallerySlider/GallerySlider";
 import SectionHero3 from "components/SectionHero/SectionHero3";
 import ResultGridFeature from "./ResultGridFeature";
+import CustomLoader from "components/CustomLoader";
 
 const DEMO_CATS: TaxonomyType[] = [
   {
@@ -204,6 +205,7 @@ function PageHome() {
           <SectionClientSay uniqueClassName="PageHome_" />
         </div>
       </div>
+      {/* <CustomLoader /> */}
     </div>
   );
 }

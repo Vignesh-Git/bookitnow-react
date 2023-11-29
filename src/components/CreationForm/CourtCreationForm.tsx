@@ -8,6 +8,7 @@ import Upload from "images/Upload";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Checkbox from "shared/Checkbox/Checkbox";
 import Input from "shared/Input/Input";
 import NcDropDown from "shared/NcDropDown/NcDropDown";
@@ -24,10 +25,6 @@ function CourtForm({
   onChange,
   onPriceChange,
   onTimeChange,
-  addOpeningHours,
-  deleteOpeningHours,
-  addPrice,
-  deletePrice,
 }: {
   courtData: any;
   onDelete: () => void;
@@ -37,15 +34,11 @@ function CourtForm({
   onChange: any;
   onPriceChange: any;
   onTimeChange: any;
-  addOpeningHours: any;
-  deleteOpeningHours: any;
-  addPrice: any;
-  deletePrice: any;
 }) {
   const [option, setOption] = useState([]);
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/sport/get_all`)
       .then((res) => setOption(res.data))
       .catch(() => toast.error("Something went wrong!"));
   }, []);
@@ -104,13 +97,37 @@ function CourtForm({
       </div>
       <div className="w-20 border-b border-neutral-200 dark:border-neutral-700"></div>
       <FormItem label="Court Name">
-        <Select
-          placeholder="court_name"
+        <Input
+          placeholder="Eg., 1"
           id="court_name"
-          onChange={(e) => {
-            onChange(e.target.value, "court_id");
-          }}
+          name="court_name"
+          onChange={(e) => onChange(e.target.value, "court_name")}
           value={courtData.court_name}
+        />
+        <p className="text-sm text-[red]">
+          {!courtData.court_name && showError ? "Court Name is Required" : null}
+        </p>
+      </FormItem>
+      <FormItem label="Court Code">
+        <Input
+          placeholder="Eg., 1"
+          id="court_code"
+          name="court_code"
+          onChange={(e) => onChange(e.target.value, "court_code")}
+          value={courtData.court_code}
+        />
+        <p className="text-sm text-[red]">
+          {!courtData.court_code && showError ? "Court Id is Required" : null}
+        </p>
+      </FormItem>
+      <FormItem label="Court Id">
+        <Select
+          placeholder="sport_id"
+          id="sport_id"
+          onChange={(e) => {
+            onChange(e.target.value, "sport_id");
+          }}
+          value={courtData.sport_id}
         >
           <option value="">Please select any</option>
 
@@ -119,7 +136,7 @@ function CourtForm({
           ))}
         </Select>
         <p className="text-sm text-[red]">
-          {!courtData.court_id && showError ? "Court Name is Required" : null}
+          {!courtData.sport_id && showError ? "Court Name is Required" : null}
         </p>
       </FormItem>
 
@@ -175,12 +192,6 @@ function CourtForm({
                 <div className="my-3">
                   <p className="mb-3 flex justify-between text-sm">
                     <div>{d[0]}</div>
-                    <div
-                      className="text-[blue] cursor-pointer"
-                      onClick={() => addOpeningHours(d[0])}
-                    >
-                      + Add
-                    </div>
                   </p>
                   {d[1].map((data: any, index: number) => (
                     <div className="flex gap-3 mt-2 items-center">
@@ -222,12 +233,6 @@ function CourtForm({
                           </p>
                         )}
                       </div>
-                      <div
-                        className="text-sm text-[red] cursor-pointer"
-                        onClick={() => deleteOpeningHours(index, d[0])}
-                      >
-                        <MinusCircleIcon className="w-6 h-6 " />
-                      </div>
                     </div>
                   ))}
                 </div>
@@ -236,7 +241,7 @@ function CourtForm({
           );
         })}
       </FormItem>
-      <FormItem label="Custom Pricing">
+      <FormItem label="Pricing">
         {Object.entries(courtData.price).map((d: any, idx) => {
           console.log(d[1]);
           return (
@@ -245,12 +250,6 @@ function CourtForm({
                 <div className="my-3">
                   <p className="mb-3 flex justify-between text-sm">
                     <div>{d[0]}</div>
-                    <div
-                      className="text-[blue] cursor-pointer"
-                      onClick={() => addPrice(d[0])}
-                    >
-                      + Add
-                    </div>
                   </p>
                   {d[1].length > 0 &&
                     d[1].map((data: any, index: number) => (
@@ -323,12 +322,6 @@ function CourtForm({
                             </p>
                           )}
                         </div>
-                        <p
-                          className="text-sm text-[red] cursor-pointer"
-                          onClick={() => deletePrice(index, d[0])}
-                        >
-                          <MinusCircleIcon className="w-6 h-6 " />
-                        </p>
                       </div>
                     ))}
                 </div>
@@ -437,7 +430,7 @@ function CourtForm({
                 </div>
               )}
               <p className="text-sm text-[red]">
-                {!(courtData.extra_images?.length > 0 && showError)
+                {courtData.extra_images?.length > 0 && !showError
                   ? null
                   : "Atleast one image is Required"}
               </p>
@@ -466,52 +459,46 @@ function CourtCreationForm({
   courts,
   setCourts,
   onSubmit,
+  availableDays,
   onBack,
 }: {
   onSubmit: any;
   onBack: any;
   courts: any;
+  availableDays: any;
   setCourts: any;
 }) {
   const handleAddCourt = () => {
+    let available_days: any = {};
+    let pricing: any = {};
+    availableDays.map((d: any) => {
+      available_days[d] = [
+        {
+          from: "",
+          to: "",
+        },
+      ];
+      pricing[d] = [
+        {
+          time_from: "",
+          time_to: "",
+          amount: "",
+        },
+      ];
+    });
     setCourts([
       ...courts,
       {
-        court_id: "",
+        court_name: "",
+        court_code: "",
+        sport_id: "",
         number_of_courts: "",
         description: "",
         policy: "",
         hero_image: "",
         extra_images: [],
-        opening_hours: {
-          monday: [
-            {
-              from: "",
-              to: "",
-            },
-          ],
-          tuesday: [],
-          wednesday: [],
-          thursday: [],
-          friday: [],
-          saturday: [],
-          sunday: [],
-        },
-        price: {
-          monday: [
-            {
-              time_from: "",
-              time_to: "",
-              amount: "",
-            },
-          ],
-          tuesday: [],
-          wednesday: [],
-          thursday: [],
-          friday: [],
-          saturday: [],
-          sunday: [],
-        },
+        opening_hours: available_days,
+        price: pricing,
         enabled: true,
       },
     ]);
@@ -524,6 +511,39 @@ function CourtCreationForm({
   };
 
   const [showError, setShowError] = useState(false);
+
+  const calculateTimeRanges = (fromTime: Date, currentDate: Date) => {
+    const ranges = [];
+    var startTime = new Date(fromTime); // Create a new Date object to avoid modifying the original
+    const endTime = new Date(currentDate); // Create a new Date object for the end time
+
+    // Calculate time ranges
+    while (startTime < endTime) {
+      const nextTime = new Date(startTime);
+      nextTime.setHours(startTime.getHours() + 1);
+
+      // Ensure that the end time of the last range does not exceed the currentDate
+      const end = nextTime < endTime ? nextTime : endTime;
+
+      ranges.push({
+        time_from: new Date(startTime),
+        time_to: new Date(end),
+      });
+
+      startTime.setHours(startTime.getHours() + 1);
+    }
+    if (ranges.length > 0) {
+      const lastRange = ranges[ranges.length - 1];
+      const lastRangeEndTime = new Date(lastRange.time_to);
+      const toTimeDate = new Date(currentDate);
+
+      if (lastRangeEndTime >= toTimeDate) {
+        ranges.pop();
+      }
+    }
+    // Update the state
+    return ranges;
+  };
 
   return (
     <CommonLayout
@@ -561,9 +581,11 @@ function CourtCreationForm({
           });
 
           if (
-            court.court_id &&
+            court.sport_id &&
+            court.court_name &&
+            court.court_code &&
             court.description &&
-            court.extra_images.length > 1 &&
+            court.extra_images.length >= 1 &&
             court.hero_image &&
             court.policy &&
             timing.filter((a: any) => a === true).length === timing.length &&
@@ -618,7 +640,7 @@ function CourtCreationForm({
               idx: string,
               name: string,
               number: number
-            ) =>
+            ) => {
               setCourts((prev: any) => {
                 const currentDate = new Date();
 
@@ -626,39 +648,26 @@ function CourtCreationForm({
 
                 currentDate.setHours(Number(hours), Number(minutes));
                 prev[index].opening_hours[idx][number][name] = currentDate;
+
                 return [...prev];
-              })
-            }
-            addOpeningHours={(e: any) =>
-              setCourts((prev: any) => {
-                prev[index].opening_hours[e].push({
-                  from: "",
-                  to: "",
+              });
+              if (name === "to") {
+                var fromTime = courts[index].opening_hours[idx][0].from;
+                const currentDate = new Date();
+
+                const [hours, minutes] = value.split(":");
+
+                currentDate.setHours(Number(hours), Number(minutes));
+                const timeRange = calculateTimeRanges(fromTime, currentDate);
+                console.log({ fromTime, currentDate }, timeRange);
+                setCourts((prev: any) => {
+                  prev[index].price[idx] = timeRange.map((d) => ({
+                    ...d,
+                    amount: "",
+                  }));
+                  return [...prev];
                 });
-                return [...prev];
-              })
-            }
-            deleteOpeningHours={(idx: number, name: string) => {
-              setCourts((prev: any) => {
-                prev[index].opening_hours[name].splice(idx, 1);
-                return [...prev];
-              });
-            }}
-            addPrice={(e: any) => {
-              setCourts((prev: any) => {
-                prev[index].price[e].push({
-                  time_from: "",
-                  time_to: "",
-                  amount: "",
-                });
-                return [...prev];
-              });
-            }}
-            deletePrice={(idx: number, name: string) => {
-              setCourts((prev: any) => {
-                prev[index].price[name].splice(idx, 1);
-                return [...prev];
-              });
+              }
             }}
           />
         </div>

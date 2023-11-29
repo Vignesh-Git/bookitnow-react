@@ -110,7 +110,7 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
   const [sports, setSports] = useState([]);
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/sport/get_all`)
       .then((response) => {
         setSports(response.data.map((d: any) => d.name));
       })
@@ -165,62 +165,63 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
           <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
             {data &&
               data.courts.map((d: any) => (
-                <div className="flex justify-between">
-                  {d.court_id.name}
-                  <button
-                    onClick={() =>
-                      filteredData.courts.includes(d.court_id._id)
-                        ? setFilteredData((prev) => {
-                            let index = filteredData.courts.indexOf(
-                              d.court_id._id
-                            );
-                            if (index !== -1) {
-                              filteredData.courts.splice(index, 1);
-                            }
+                <>
+                  <div className="flex justify-between">
+                    {d.sport_id.name}
+                    <button
+                      onClick={() =>
+                        filteredData.courts.includes(d.sport_id._id)
+                          ? setFilteredData((prev) => {
+                              let index = filteredData.courts.indexOf(
+                                d.sport_id._id
+                              );
+                              if (index !== -1) {
+                                filteredData.courts.splice(index, 1);
+                              }
 
-                            return { ...prev, courts: [...prev.courts] };
-                          })
-                        : setFilteredData((prev) => {
-                            prev.courts.push(d.court_id._id);
-                            return { ...prev, courts: [...prev.courts] };
-                          })
-                    }
-                    className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
-                      filteredData.courts.includes(d.court_id._id)
-                        ? "bg-[blue] text-[white]"
-                        : ""
-                    }`}
-                  >
-                    {filteredData.courts.includes(d.court_id._id)
-                      ? "Added"
-                      : "Add"}
-                  </button>
-                </div>
+                              return { ...prev, courts: [...prev.courts] };
+                            })
+                          : setFilteredData((prev) => {
+                              prev.courts.push(d.sport_id._id);
+                              return { ...prev, courts: [...prev.courts] };
+                            })
+                      }
+                      className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
+                        filteredData.courts.includes(d.sport_id._id)
+                          ? "bg-[blue] text-[white]"
+                          : ""
+                      }`}
+                    >
+                      {filteredData.courts.includes(d.sport_id._id)
+                        ? "Added"
+                        : "Add"}
+                    </button>
+                  </div>
+                  <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
+                </>
               ))}
-
-            <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
           </div>
           {data &&
             data.courts.filter((d: any) => {
-              return filteredData.courts.includes(d.court_id._id);
+              return filteredData.courts.includes(d.sport_id._id);
             }).length > 0 && (
               <>
                 <div>Selected Court</div>
                 <div>
                   {data.courts
                     .filter((d: any) => {
-                      return filteredData.courts.includes(d.court_id._id);
+                      return filteredData.courts.includes(d.sport_id._id);
                     })
                     .map((d: any) => (
                       <div className="flex justify-between">
-                        <p>{d.court_id.name}</p>
+                        <p>{d.sport_id.name}</p>
                         <MinusCircleIcon
                           color="red"
                           className="w-5 cursor-pointer"
                           onClick={() =>
                             setFilteredData((prev) => {
                               let index = filteredData.courts.indexOf(
-                                d.court_id._id
+                                d.sport_id._id
                               );
                               if (index !== -1) {
                                 filteredData.courts.splice(index, 1);

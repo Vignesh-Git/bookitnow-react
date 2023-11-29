@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useEffect, useState } from "react";
+import React, { FC, FormEvent, Fragment, useEffect, useState } from "react";
 import facebookSvg from "images/Facebook.svg";
 import twitterSvg from "images/Twitter.svg";
 import googleSvg from "images/Google.svg";
@@ -11,9 +11,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import tokenHandler from "utils/tokenHandler";
 import { useNavigate } from "react-router-dom";
+import { Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import PageLogin from "containers/PageLogin/PageLogin";
 
 export interface PageSignUpProps {
   className?: string;
+  callBack?: () => void;
+  openModal?: boolean;
 }
 
 const loginSocials = [
@@ -34,7 +39,11 @@ const loginSocials = [
   },
 ];
 
-const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
+const PageSignUp: FC<PageSignUpProps> = ({
+  className = "",
+  callBack,
+  openModal = false,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -57,8 +66,8 @@ const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
           .then((response) => {
             setIsLoading(false);
             tokenHandler.setToCookie("bint", response.data.token);
-            navigate("/");
-            window.location.reload();
+            callBack ? callBack() : navigate("/");
+            // window.location.reload();
           })
           .catch((err) => {
             setIsLoading(false);
@@ -93,7 +102,7 @@ const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
       });
     }
   }, [loginState.isStateFinalized]);
-
+  const [loginModal, setLoginModal] = useState(false);
   return (
     <div className={`nc-PageSignUp  ${className}`} data-nc-id="PageSignUp">
       <Helmet>
@@ -158,12 +167,65 @@ const PageSignUp: FC<PageSignUpProps> = ({ className = "" }) => {
           </form>
 
           {/* ==== */}
-          <span className="block text-center text-neutral-700 dark:text-neutral-300">
-            Already have an account? {` `}
-            <Link to="/login">Sign in</Link>
-          </span>
+          {openModal ? (
+            <span className="block text-center text-neutral-700 dark:text-neutral-300">
+              Already have an account? {` `}
+              <span
+                className="cursor-pointer"
+                onClick={() => {
+                  // callBack && callBack();
+                  setLoginModal(true);
+                }}
+              >
+                Sign in
+              </span>
+            </span>
+          ) : (
+            <span className="block text-center text-neutral-700 dark:text-neutral-300">
+              Already have an account? {` `}
+              <Link to="/login">Sign in</Link>
+            </span>
+          )}
         </div>
       </div>
+      <Transition appear show={loginModal} as={Fragment}>
+        <Dialog
+          as="div"
+          className="HeroSearchFormMobile__Dialog relative z-50"
+          onClose={() => setLoginModal(false)}
+        >
+          <div className="fixed inset-0 bg-neutral-100 dark:bg-neutral-900">
+            <div className="flex h-full">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out transition-transform"
+                enterFrom="opacity-0 translate-y-52"
+                enterTo="opacity-100 translate-y-0"
+                leave="ease-in transition-transform"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-52"
+              >
+                <Dialog.Panel className="relative h-full overflow-hidden flex-1 flex flex-col justify-between ">
+                  <>
+                    <div className="absolute left-4 top-4">
+                      <button
+                        className="focus:outline-none focus:ring-0"
+                        onClick={() => setLoginModal(false)}
+                      >
+                        <XMarkIcon className="w-5 h-5 text-black dark:text-white" />
+                      </button>
+                    </div>
+                    <PageLogin
+                      openInModal={true}
+                      callBack={() => setLoginModal(false)}
+                    />
+                  </>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </div>
   );
 };

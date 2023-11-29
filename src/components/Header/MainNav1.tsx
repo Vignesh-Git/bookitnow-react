@@ -30,7 +30,7 @@ const MainNav1: FC<MainNav1Props> = ({ className = "" }) => {
         isAdmin: ["admin"].includes(decoded.role.toLowerCase()),
       });
     }
-  }, [loginState.isStateFinalized]);
+  }, [document.cookie]);
 
   return (
     <div className={`nc-MainNav1 relative z-10 ${className}`}>

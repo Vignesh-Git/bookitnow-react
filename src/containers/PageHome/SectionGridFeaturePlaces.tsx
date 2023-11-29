@@ -58,14 +58,14 @@ const SectionGridFeaturePlaces: FC<SectionGridFeaturePlacesProps> = ({
 
   const GetAllCourts = () => {
     axios
-      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/sport/get_all`)
       .then((res) => {
         setAvailableTabs(res.data.map((d: any) => d.name));
         setSelected(res.data[0].name);
         let venues: any = [];
         venue.map((d: any) => ({
           ...d?.courts?.map((data: any) => {
-            if (data.court_id.name === res.data[0].name) venues.push(d);
+            if (data.sport_id.name === res.data[0].name) venues.push(d);
           }),
         }));
         console.log(venues);
@@ -89,7 +89,7 @@ const SectionGridFeaturePlaces: FC<SectionGridFeaturePlacesProps> = ({
           let venues: any = [];
           venue.map((d: any) => ({
             ...d?.courts?.map((data: any) => {
-              if (data.court_id.name === e) venues.push(d);
+              if (data.sport_id.name === e) venues.push(d);
             }),
           }));
           setFeaturedVenues(venues);

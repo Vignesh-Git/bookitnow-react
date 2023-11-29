@@ -72,7 +72,7 @@ const SportInput: FC<LocationInputProps> = ({
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
+      .get(`${process.env.REACT_APP_API_DOMAIN}/api/sport/get_all`)
       .then((response) => {
         setOptionList(response.data.map((d: any) => d.name));
       })

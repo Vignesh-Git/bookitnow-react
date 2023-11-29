@@ -57,7 +57,7 @@ function CourtCreation() {
     hero_image: string;
   }) => {
     axios
-      .post(`${process.env.REACT_APP_API_DOMAIN}/api/court/add`, e)
+      .post(`${process.env.REACT_APP_API_DOMAIN}/api/sport/add`, e)
       .then(() => {
         toast.success("Added Successfully", {
           position: toast.POSITION.TOP_RIGHT,

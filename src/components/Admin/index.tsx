@@ -42,7 +42,7 @@ function Admin() {
       ) : tabActiveState === "Court" ? (
         <CourtListing />
       ) : (
-        <Venue />
+        <Venue add={true} />
       )}
     </div>
   );

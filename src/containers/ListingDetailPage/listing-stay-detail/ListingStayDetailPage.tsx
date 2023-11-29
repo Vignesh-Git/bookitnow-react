@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ChartBarIcon,
   MinusCircleIcon,
   Squares2X2Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import DetailPagetLayout from "../Layout";
@@ -14,11 +15,20 @@ import FlightDateRangeInput from "components/HeroSearchForm/(flight-search-form)
 import TimeInput from "components/HeroSearchForm/TimeInput";
 import DurationInput from "components/HeroSearchForm/DurationInput";
 import tokenHandler from "utils/tokenHandler";
+import { Dialog, Transition } from "@headlessui/react";
+import PageLogin from "containers/PageLogin/PageLogin";
+import SportInput from "components/HeroSearchForm/SportInput";
+import CustomLoader from "components/CustomLoader";
+import { optionsList } from "components/HeroSearchForm/TimeInput";
 
-const StayDetailPageContainer = ({ data }: { data: any }) => {
+const StayDetailPageContainer = ({
+  data,
+  sports,
+}: {
+  data: any;
+  sports: string[];
+}) => {
   //
-
-  let [isOpenModalPricing, setIsOpenModalPricing] = useState(false);
 
   const thisPathname = useLocation().pathname;
   const router = useNavigate();
@@ -27,6 +37,20 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
   const handleOpenModalImageGallery = () => {
     router(`${thisPathname}/?modal=PHOTO_TOUR_SCROLLABLE`);
   };
+
+  const [showModal, setShowModal] = useState(false);
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const [availabilityFilterData, setAvailabilityFilterData] = useState<{
+    date: Date | null;
+    sports: string;
+  }>({
+    date: null,
+    sports: "",
+  });
 
   const renderSection1 = () => {
     return (
@@ -54,7 +78,7 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
         <div className="w-full border-b border-neutral-100 dark:border-neutral-700" />
 
         {/* 6 */}
-        <div className="flex items-center justify-between xl:justify-start space-x-8 xl:space-x-12 text-sm text-neutral-700 dark:text-neutral-300">
+        <div className="flex w-full items-center justify-between text-sm text-neutral-700 dark:text-neutral-300">
           <div className="flex items-center space-x-3 ">
             <i className=" las la-user text-2xl "></i>
             <span className="">
@@ -62,7 +86,135 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
               <span className="hidden sm:inline-block">Courts</span>
             </span>
           </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="border border-[blue] text-[blue] text-xs px-2 py-2 cursor-pointer rounded-sm"
+          >
+            View Availability
+          </button>
         </div>
+        <Transition appear show={showModal} as={Fragment}>
+          <Dialog
+            as="div"
+            className="HeroSearchFormMobile__Dialog relative z-50"
+            onClose={closeModal}
+          >
+            <div className="fixed inset-0 bg-neutral-100 dark:bg-neutral-900">
+              <div className="flex h-full">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out transition-transform"
+                  enterFrom="opacity-0 translate-y-52"
+                  enterTo="opacity-100 translate-y-0"
+                  leave="ease-in transition-transform"
+                  leaveFrom="opacity-100 translate-y-0"
+                  leaveTo="opacity-0 translate-y-52"
+                >
+                  <Dialog.Panel className="relative h-full overflow-hidden flex-1 flex flex-col justify-between ">
+                    <>
+                      <div className="absolute left-4 top-4">
+                        <button
+                          className="focus:outline-none focus:ring-0"
+                          onClick={closeModal}
+                        >
+                          <XMarkIcon className="w-5 h-5 text-black dark:text-white" />
+                        </button>
+                      </div>
+                    </>
+                    <div className="w-1/2 m-auto flex-1 pt-12 p-1 flex flex-col overflow-auto">
+                      <h1 className="text-2xl text-[white]">
+                        Live Availability
+                      </h1>
+                      <div className="w-[120px] h-[1px] bg-slate-700 mt-3"></div>
+                      <SportInput
+                        value={availabilityFilterData.sports}
+                        placeHolder="Sport"
+                        desc="What do you want to play?"
+                        divHideVerticalLineClass=" -inset-x-0.5"
+                        className="block"
+                        onchange={(e) =>
+                          setAvailabilityFilterData((prev) => ({
+                            ...prev,
+                            sports: e,
+                          }))
+                        }
+                      />
+                      <FlightDateRangeInput
+                        selectsRange={false}
+                        onchange={(e) =>
+                          setAvailabilityFilterData((prev) => ({
+                            ...prev,
+                            date: e,
+                          }))
+                        }
+                        value={availabilityFilterData.date}
+                      />
+                      <div className="max-w-4xl mx-auto">
+                        <div className="flex flex-col">
+                          <div className="overflow-x-auto shadow-md sm:rounded-lg">
+                            <div className="inline-block min-w-full align-middle">
+                              <div className="overflow-hidden ">
+                                <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
+                                  <thead className="bg-gray-100 dark:bg-gray-700">
+                                    <tr>
+                                      <th
+                                        scope="col"
+                                        className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400"
+                                      >
+                                        Court Name
+                                      </th>
+                                      {optionsList.map((d) => (
+                                        <th
+                                          scope="col"
+                                          className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400"
+                                        >
+                                          {d}
+                                        </th>
+                                      ))}
+                                    </tr>
+                                  </thead>
+                                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                    <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        Badminton Court
+                                      </td>
+                                      {optionsList.map((d, idx) => (
+                                        <td
+                                          className={`py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white ${
+                                            idx % 2 === 0 &&
+                                            "bg-[blue] rounded-t-md"
+                                          }`}
+                                        ></td>
+                                      ))}
+                                    </tr>
+                                    <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        Badminton Court
+                                      </td>
+                                      {optionsList.map((d, idx) => (
+                                        <td
+                                          className={`py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white 
+                                          ${
+                                            idx % 2 !== 0 &&
+                                            "bg-[blue] rounded-b-md"
+                                          }`}
+                                        ></td>
+                                      ))}
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
       </div>
     );
   };
@@ -70,7 +222,7 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
   const renderSection2 = () => {
     return (
       <div className="listingSection__wrap">
-        <h2 className="text-2xl font-semibold">Court information</h2>
+        <h2 className="text-2xl font-semibold">Court inhtmlFormation</h2>
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
         <div className="text-neutral-6000 dark:text-neutral-300">
           <p className="text-xl font-semibold">Description</p>
@@ -146,10 +298,7 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
   const renderSection5 = () => {
     return (
       <>
-        <div
-          className="listingSection__wrap cursor-pointer"
-          onClick={() => setIsOpenModalPricing(true)}
-        >
+        <div className="listingSection__wrap cursor-pointer">
           {/* HEADING */}
           <div>
             <h2 className="text-2xl font-semibold">Pricing</h2>
@@ -157,9 +306,9 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
           <div className="mt-4 overflow-auto text-neutral-700 dark:text-neutral-300">
             {data.courts.map((d: any) => (
               <div className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 mb-5">
-                <div className="flex gap-4 items-center">
+                <div className="flex gap-4 items-center capitalize">
                   <ChartBarIcon className="w-7 h-7" />
-                  {d.court_id.name}
+                  {d.court_name}
                 </div>
                 <div className="w-20 border-b my-3 border-neutral-200 dark:border-neutral-700"></div>
 
@@ -214,13 +363,16 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
       </>
     );
   };
+
   const renderSection6 = (data: any) => {
     console.log(data);
     return (
       <>
         <div className="listingSection__wrap cursor-pointer">
           <div>
-            <h2 className="text-2xl font-semibold">{data.court_id.name}</h2>
+            <h2 className="text-2xl font-semibold capitalize">
+              {data.court_name}
+            </h2>
           </div>
           <div className="relative grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2">
             <div className="col-span-2 row-span-3 sm:row-span-2 relative rounded-md sm:rounded-xl overflow-hidden cursor-pointer ">
@@ -260,7 +412,7 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
               </span>
             </button>
           </div>
-          <p>Allowed Players: {data.court_id.allowed_players}</p>
+          <p>Allowed Players: {data.sport_id.allowed_players}</p>
           <p>
             <p className="text-lg font-semibold"> Description:</p>{" "}
             <div>{data.description}</div>
@@ -273,16 +425,8 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
       </>
     );
   };
+
   const location = useLocation();
-  const [sports, setSports] = useState([]);
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_DOMAIN}/api/court/get_all`)
-      .then((response) => {
-        setSports(response.data.map((d: any) => d.name));
-      })
-      .catch((err) => toast.error("Something went wrong!"));
-  }, []);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -366,6 +510,7 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
   }, [data]);
 
   const navigate = useNavigate();
+  const [loginModal, setLoginModal] = useState(false);
 
   const renderSidebar = () => {
     return (
@@ -382,108 +527,127 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
             <option value={sport}>{sport}</option>
           ))}
         </Select>
-        <div className="listingSectionSidebar__wrap p-4">
-          <p>Select a Date</p>
-          <FlightDateRangeInput
-            onchange={(e) => setFilteredData((prev) => ({ ...prev, date: e }))}
-            selectsRange={false}
-            fieldClassName="py-2"
-            value={filteredData.date}
-            caption={false}
-            filterDate={(date: Date) => {
-              return days.includes(date.getDay());
-            }}
-          />
-          <p>Select a start time and duration</p>
-          <TimeInput
-            caption={false}
-            padding="p-0"
-            placeHolder="Time"
-            value={filteredData.time}
-            onChange={(e) => setFilteredData((prev) => ({ ...prev, time: e }))}
-          />
-          <DurationInput
-            value={filteredData.duration}
-            onchange={(e) =>
-              setFilteredData((prev) => ({ ...prev, duration: e }))
-            }
-            fieldClassName="p-0"
-            placeHolder="Duration"
-            caption={false}
-          />
+        {filteredData.sports && (
+          <div className="listingSectionSidebar__wrap p-4">
+            <p>Select a Date</p>
+            <FlightDateRangeInput
+              onchange={(e) =>
+                setFilteredData((prev) => ({ ...prev, date: e }))
+              }
+              selectsRange={false}
+              fieldClassName="py-2"
+              value={filteredData.date}
+              caption={false}
+              filterDate={(date: Date) => {
+                return days.includes(date.getDay());
+              }}
+            />
+            <p>Select a start time and duration</p>
+            <TimeInput
+              caption={false}
+              padding="p-0"
+              placeHolder="Time"
+              value={filteredData.time}
+              onChange={(e) =>
+                setFilteredData((prev) => ({ ...prev, time: e }))
+              }
+            />
+            <DurationInput
+              value={filteredData.duration}
+              onchange={(e) =>
+                setFilteredData((prev) => ({ ...prev, duration: e }))
+              }
+              fieldClassName="p-0"
+              placeHolder="Duration"
+              caption={false}
+            />
+            {filteredData.date &&
+              filteredData.duration &&
+              filteredData.time && (
+                <>
+                  <p>Select your preferred Court</p>
+                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
+                    {data.courts.map((d: any) => (
+                      <>
+                        <div className="flex justify-between">
+                          {d.court_name}
+                          <button
+                            onClick={() =>
+                              filteredData.courts.includes(d.court_code)
+                                ? setFilteredData((prev) => {
+                                    let index = filteredData.courts.indexOf(
+                                      d.court_code
+                                    );
+                                    if (index !== -1) {
+                                      filteredData.courts.splice(index, 1);
+                                    }
 
-          <p>Select your preferred Court</p>
-          <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-            {data.courts.map((d: any) => (
-              <div className="flex justify-between">
-                {d.court_id.name}
-                <button
-                  onClick={() =>
-                    filteredData.courts.includes(d.court_id._id)
-                      ? setFilteredData((prev) => {
-                          let index = filteredData.courts.indexOf(
-                            d.court_id._id
-                          );
-                          if (index !== -1) {
-                            filteredData.courts.splice(index, 1);
-                          }
-
-                          return { ...prev, courts: [...prev.courts] };
-                        })
-                      : setFilteredData((prev) => {
-                          prev.courts.push(d.court_id._id);
-                          return { ...prev, courts: [...prev.courts] };
-                        })
-                  }
-                  className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
-                    filteredData.courts.includes(d.court_id._id)
-                      ? "bg-[blue] text-[white]"
-                      : ""
-                  }`}
-                >
-                  {filteredData.courts.includes(d.court_id._id)
-                    ? "Added"
-                    : "Add"}
-                </button>
-              </div>
-            ))}
-            <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
-          </div>
-          {data.courts.filter((d: any) => {
-            return filteredData.courts.includes(d.court_id._id);
-          }).length > 0 && (
-            <>
-              <div>Selected Court</div>
-              <div>
-                {data.courts
-                  .filter((d: any) => {
-                    return filteredData.courts.includes(d.court_id._id);
-                  })
-                  .map((d: any) => (
-                    <div className="flex justify-between">
-                      <p>{d.court_id.name}</p>
-                      <MinusCircleIcon
-                        color="red"
-                        className="w-5 cursor-pointer"
-                        onClick={() =>
-                          setFilteredData((prev) => {
-                            let index = filteredData.courts.indexOf(
-                              d.court_id._id
-                            );
-                            if (index !== -1) {
-                              filteredData.courts.splice(index, 1);
+                                    return {
+                                      ...prev,
+                                      courts: [...prev.courts],
+                                    };
+                                  })
+                                : setFilteredData((prev) => {
+                                    prev.courts.push(d.court_code);
+                                    return {
+                                      ...prev,
+                                      courts: [...prev.courts],
+                                    };
+                                  })
                             }
+                            className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
+                              filteredData.courts.includes(d.court_code)
+                                ? "bg-[blue] text-[white]"
+                                : ""
+                            }`}
+                          >
+                            {filteredData.courts.includes(d.court_code)
+                              ? "Added"
+                              : "Add"}
+                          </button>
+                        </div>
+                        <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
+                      </>
+                    ))}
+                  </div>
+                </>
+              )}
+            {data.courts.filter((d: any) => {
+              return filteredData.courts.includes(d.court_code);
+            }).length > 0 && (
+              <>
+                <div>Selected Court</div>
+                <div>
+                  {data.courts
+                    .filter((d: any) => {
+                      return filteredData.courts.includes(d.court_code);
+                    })
+                    .map((d: any) => (
+                      <div className="flex justify-between">
+                        <p>{d.court_code}</p>
+                        <MinusCircleIcon
+                          color="red"
+                          className="w-5 cursor-pointer"
+                          onClick={() =>
+                            setFilteredData((prev) => {
+                              let index = filteredData.courts.indexOf(
+                                d.court_code
+                              );
+                              if (index !== -1) {
+                                filteredData.courts.splice(index, 1);
+                              }
 
-                            return { ...prev, courts: [...prev.courts] };
-                          })
-                        }
-                      />
-                    </div>
-                  ))}
-              </div>
-            </>
-          )}
-        </div>
+                              return { ...prev, courts: [...prev.courts] };
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
         <ButtonPrimary
           onClick={() => {
             console.log(filteredData);
@@ -524,16 +688,17 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
               })
               .join("&");
 
-            console.log(queryParams);
-            loginState.isLoggedIn
-              ? navigate(
-                  `/checkout/${
-                    routers.pathname.split("/")[
-                      routers.pathname.split("/").length - 1
-                    ]
-                  }?${queryParams}`
-                )
-              : navigate(`/login?callBack=${location.pathname}`);
+            if (loginState.isLoggedIn) {
+              navigate(
+                `/checkout/${
+                  routers.pathname.split("/")[
+                    routers.pathname.split("/").length - 1
+                  ]
+                }?${queryParams}`
+              );
+            } else {
+              setLoginModal(true);
+            }
           }}
         >
           Reserve
@@ -615,6 +780,44 @@ const StayDetailPageContainer = ({ data }: { data: any }) => {
           <div className="sticky top-28">{renderSidebar()}</div>
         </div>
       </main>
+      <Transition appear show={loginModal} as={Fragment}>
+        <Dialog
+          as="div"
+          className="HeroSearchhtmlFormMobile__Dialog relative z-50"
+          onClose={() => setLoginModal(false)}
+        >
+          <div className="fixed inset-0 bg-neutral-100 dark:bg-neutral-900">
+            <div className="flex h-full">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out transition-transform"
+                enterFrom="opacity-0 translate-y-52"
+                enterTo="opacity-100 translate-y-0"
+                leave="ease-in transition-transform"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-52"
+              >
+                <Dialog.Panel className="relative h-full overflow-hidden flex-1 flex flex-col justify-between ">
+                  <>
+                    <div className="absolute left-4 top-4">
+                      <button
+                        className="focus:outline-none focus:ring-0"
+                        onClick={() => setLoginModal(false)}
+                      >
+                        <XMarkIcon className="w-5 h-5 text-black dark:text-white" />
+                      </button>
+                    </div>
+                    <PageLogin
+                      openInModal={true}
+                      callBack={() => setLoginModal(false)}
+                    />
+                  </>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </div>
   );
 };
@@ -623,16 +826,28 @@ export default function ListingStayDetailPage() {
   const [data, setData] = useState();
   const router = useLocation();
   const id = router.pathname.split("/")[router.pathname.split("/").length - 1];
+  const [sports, setSports] = useState([]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
+    setLoading(true);
+
     axios
       .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/${id}`)
-      .then((res) => setData(res.data))
-      .catch(() => toast.error("Something went wrong!"));
+      .then((res) => {
+        setData(res.data);
+        setLoading(false);
+        setSports(res.data.courts.map((d: any) => d.sport_id.name));
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+        setLoading(false);
+      });
   }, [id]);
 
   return (
     <DetailPagetLayout>
-      {data && <StayDetailPageContainer data={data} />}
+      {data && <StayDetailPageContainer data={data} sports={sports} />}
+      {loading && <CustomLoader />}
     </DetailPagetLayout>
   );
 }
