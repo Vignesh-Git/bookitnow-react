@@ -1,6 +1,6 @@
 import FormItem from "containers/PageAddListing1/FormItem";
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import Input from "shared/Input/Input";
 import Upload from "images/Upload";
@@ -11,6 +11,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import CustomLoader from "components/CustomLoader";
 
 function CourtCreation() {
   const validationSchema = Yup.object().shape({
@@ -27,6 +28,7 @@ function CourtCreation() {
     validationSchema: validationSchema,
     onSubmit: (e) => submitForm(e),
   });
+  const [loader, setLoader] = useState(false);
   const readFileAsBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -56,20 +58,25 @@ function CourtCreation() {
     allowed_players: string;
     hero_image: string;
   }) => {
+    setLoader(true);
     axios
       .post(`${process.env.REACT_APP_API_DOMAIN}/api/sport/add`, e)
       .then(() => {
         toast.success("Added Successfully", {
           position: toast.POSITION.TOP_RIGHT,
         });
+        setLoader(false);
+
         formik.resetForm();
         navigate("/admin/console");
       })
-      .catch(() =>
+      .catch(() => {
+        setLoader(false);
+
         toast.error("Something went wrong!", {
           position: toast.POSITION.TOP_RIGHT,
-        })
-      );
+        });
+      });
   };
   const navigate = useNavigate();
   return (
@@ -163,6 +170,7 @@ function CourtCreation() {
 
         <ButtonPrimary onClick={formik.submitForm}>Save</ButtonPrimary>
       </div>
+      {loader && <CustomLoader />}
     </div>
   );
 }

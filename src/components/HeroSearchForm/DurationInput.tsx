@@ -15,7 +15,22 @@ export interface LocationInputProps {
   value?: string;
   caption?: boolean;
   fieldClassName?: string;
+  options?: string[];
 }
+
+const optionsList = [
+  "1 Hour",
+  "1.5 Hours",
+  "2 Hours",
+  "2.5 Hours",
+  "3 Hours",
+  "3.5 Hours",
+  "4 Hours",
+  "4.5 Hours",
+  "5 Hours",
+  "5.5 Hours",
+  "6 Hours",
+];
 
 const DurationInput: FC<LocationInputProps> = ({
   autoFocus = false,
@@ -27,6 +42,7 @@ const DurationInput: FC<LocationInputProps> = ({
   value,
   caption = true,
   fieldClassName,
+  options = optionsList,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -69,25 +85,11 @@ const DurationInput: FC<LocationInputProps> = ({
     setShowPopover(false);
   };
 
-  const optionsList = [
-    "1 Hour",
-    "1.5 Hours",
-    "2 Hours",
-    "2.5 Hours",
-    "3 Hours",
-    "3.5 Hours",
-    "4 Hours",
-    "4.5 Hours",
-    "5 Hours",
-    "5.5 Hours",
-    "6 Hours",
-  ];
-
   const renderRecentSearches = () => {
     return (
       <>
         <div className="mt-2">
-          {optionsList.map((item) => (
+          {options.map((item) => (
             <span
               onClick={() => {
                 handleSelectLocation(item);
@@ -112,7 +114,7 @@ const DurationInput: FC<LocationInputProps> = ({
   const renderSearchValue = () => {
     return (
       <>
-        {optionsList.map((item) => (
+        {options.map((item) => (
           <span
             onClick={() => handleSelectLocation(item)}
             key={item}

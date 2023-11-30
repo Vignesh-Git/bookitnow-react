@@ -15,6 +15,7 @@ export interface LocationInputProps {
   onChange?: (a: string) => void;
   value?: string;
   caption?: boolean;
+  availableTiming?: string[];
 }
 export const optionsList = [
   "7:00 AM",
@@ -78,6 +79,7 @@ const TimeInput: FC<LocationInputProps> = ({
   divHideVerticalLineClass = "left-10 -right-0.5",
   padding,
   caption = true,
+  availableTiming = optionsList,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -124,7 +126,7 @@ const TimeInput: FC<LocationInputProps> = ({
     return (
       <>
         <div className="mt-2">
-          {optionsList.map((item) => (
+          {availableTiming.map((item) => (
             <span
               onClick={() => handleSelectLocation(item)}
               key={item}
@@ -146,7 +148,7 @@ const TimeInput: FC<LocationInputProps> = ({
   const renderSearchValue = () => {
     return (
       <>
-        {optionsList.map((item) => (
+        {availableTiming.map((item) => (
           <span
             onClick={() => {
               handleSelectLocation(item);

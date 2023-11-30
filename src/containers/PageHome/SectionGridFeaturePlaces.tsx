@@ -7,6 +7,7 @@ import StayCard from "components/StayCard/StayCard";
 import axios, { isCancel, AxiosError } from "axios";
 import { toast } from "react-toastify";
 import FeaturedVenueCard from "components/FeaturedVenueCard/FeaturedVenueCard";
+import CustomLoader from "components/CustomLoader";
 
 // OTHER DEMO WILL PASS PROPS
 const DEMO_DATA: StayDataType[] = DEMO_STAY_LISTINGS.filter((_, i) => i < 4);
@@ -31,20 +32,24 @@ const SectionGridFeaturePlaces: FC<SectionGridFeaturePlacesProps> = ({
 }) => {
   const [venue, setVenue] = useState([]);
   const [featuredVenues, setFeaturedVenues] = useState<any>([]);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (!venue.length) {
+      setLoading(true);
+
       axios
         .get(
           `${process.env.REACT_APP_API_DOMAIN}/api/venue/get_featured_venues`
         )
         .then((response) => {
           setVenue(response.data);
+          setLoading(false);
         })
         .catch((e) => {
           toast.error("Something went wrong!", {
             position: toast.POSITION.TOP_RIGHT,
           });
+          setLoading(false);
         });
     }
   }, [venue, venue.length]);
@@ -65,7 +70,7 @@ const SectionGridFeaturePlaces: FC<SectionGridFeaturePlacesProps> = ({
         let venues: any = [];
         venue.map((d: any) => ({
           ...d?.courts?.map((data: any) => {
-            if (data.sport_id.name === res.data[0].name) venues.push(d);
+            if (data.sport_id?.name === res.data[0].name) venues.push(d);
           }),
         }));
         console.log(venues);
@@ -103,6 +108,7 @@ const SectionGridFeaturePlaces: FC<SectionGridFeaturePlacesProps> = ({
       <div className="flex mt-16 justify-center items-center">
         <ButtonPrimary>Show me more</ButtonPrimary>
       </div>
+      {loading && <CustomLoader />}
     </div>
   );
 };

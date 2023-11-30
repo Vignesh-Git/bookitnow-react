@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import CustomLoader from "components/CustomLoader";
 export interface FormValues {
   name: string;
   website: string;
@@ -40,9 +41,11 @@ function CreationForm() {
   const queryParams = new URLSearchParams(location.search);
 
   const [count, setCount] = useState(1);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     if (queryParams.get("id")) {
+      setLoader(true);
       axios
         .get(
           `${process.env.REACT_APP_API_DOMAIN}/api/venue/${queryParams.get(
@@ -98,8 +101,12 @@ function CreationForm() {
               sport_id: d.sport_id._id,
             }))
           );
+          setLoader(false);
         })
-        .catch(() => toast.error("Something went wrong"));
+        .catch(() => {
+          toast.error("Something went wrong");
+          setLoader(false);
+        });
     }
   }, [queryParams.get("id")]);
 
@@ -149,6 +156,8 @@ function CreationForm() {
 
   const navigate = useNavigate();
   const submitForm = (data: any) => {
+    setLoader(true);
+
     axios
       .post(`${process.env.REACT_APP_API_DOMAIN}/api/venue/add`, data)
       .then((response) => {
@@ -156,15 +165,19 @@ function CreationForm() {
           position: toast.POSITION.TOP_RIGHT,
         });
         navigate("/admin/console");
+        setLoader(false);
       })
       .catch((err) => {
         toast.error("Something went wrong!", {
           position: toast.POSITION.TOP_RIGHT,
         });
+        setLoader(false);
       });
   };
 
   const editForm = (data: any) => {
+    setLoader(true);
+
     axios
       .put(
         `${process.env.REACT_APP_API_DOMAIN}/api/venue/${queryParams.get(
@@ -176,9 +189,14 @@ function CreationForm() {
         toast.success("Edited Successfully", {
           position: toast.POSITION.TOP_RIGHT,
         });
+        setLoader(false);
+
         navigate("/admin/console");
       })
-      .catch(() => toast.error("Something went wrong"));
+      .catch(() => {
+        toast.error("Something went wrong");
+        setLoader(false);
+      });
   };
 
   const validationSchema = Yup.object().shape({
@@ -277,6 +295,7 @@ function CreationForm() {
           }}
         />
       )}
+      {loader && <CustomLoader />}
     </div>
   );
 }

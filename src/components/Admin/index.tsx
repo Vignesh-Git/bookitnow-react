@@ -9,8 +9,9 @@ import NavItem from "shared/NavItem/NavItem";
 
 function Admin() {
   const navigate = useNavigate();
-  const tabs = ["Manage Booking", "Venue", "Court"];
+  const tabs = ["Manage Booking", "Venue", "Sports"];
   const [tabActiveState, setTabActiveState] = useState("Manage Booking");
+
   return (
     <div className="max-w-7xl m-auto p-3">
       <div className="flex items-center gap-4">
@@ -39,7 +40,7 @@ function Admin() {
       </Nav>
       {tabActiveState === "Manage Booking" ? (
         <ManageBooking />
-      ) : tabActiveState === "Court" ? (
+      ) : tabActiveState === "Sports" ? (
         <CourtListing />
       ) : (
         <Venue add={true} />

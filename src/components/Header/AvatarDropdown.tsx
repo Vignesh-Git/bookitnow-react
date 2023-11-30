@@ -20,6 +20,12 @@ export default function AvatarDropdown({ isAdmin = false }) {
       icon: AdjustmentsHorizontalIcon,
       isVisible: isAdmin,
     },
+    {
+      name: "My Bookings",
+      href: "/my/bookings",
+      icon: AdjustmentsHorizontalIcon,
+      isVisible: !isAdmin,
+    },
   ];
 
   const solutionsFoot = [
@@ -27,6 +33,7 @@ export default function AvatarDropdown({ isAdmin = false }) {
       name: "Logout",
       href: "##",
       icon: ArrowRightOnRectangleIcon,
+
       onClick: () => {
         tokenHandler.deleteACookie("bint");
         navigate("/");

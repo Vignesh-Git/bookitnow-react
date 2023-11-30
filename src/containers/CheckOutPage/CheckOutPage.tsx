@@ -14,13 +14,14 @@ import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import FlightSearchForm from "components/HeroSearchForm/(flight-search-form)/FlightSearchForm";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Select from "shared/Select/Select";
 import FlightDateRangeInput from "components/HeroSearchForm/(flight-search-form)/FlightDateRangeInput";
 import TimeInput from "components/HeroSearchForm/TimeInput";
 import DurationInput from "components/HeroSearchForm/DurationInput";
 import axios from "axios";
 import { toast } from "react-toastify";
+import tokenHandler from "utils/tokenHandler";
 
 export interface CheckOutPagePageMainProps {
   className?: string;
@@ -49,6 +50,7 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
   const [data, setData] = useState<any>();
   const router = useLocation();
   const id = router.pathname.split("/")[router.pathname.split("/").length - 1];
+  const [userId, setUserId] = useState("");
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_DOMAIN}/api/venue/${id}`)
@@ -79,6 +81,7 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
         })
       );
   }, [data]);
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     let getLocation = queryParams.get("location");
@@ -107,12 +110,79 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
       setFilteredData((prev: any) => ({ ...prev, duration: getDuration }));
     }
   }, [location.search]);
-  const [sports, setSports] = useState([]);
+  useEffect(() => {
+    let token = tokenHandler.searchInCookie("bint");
+    if (token) {
+      let decoded = tokenHandler.jwtDecode(token).payload;
+      setUserId(decoded.id);
+    }
+  }, [document.cookie]);
+  const navigate = useNavigate();
+  const bookOrder = (data: {
+    user_id: string;
+    venue_id: string;
+    court_id: string;
+    date: Date;
+    start_time: Date;
+    end_time: Date;
+    amount_paid: string;
+  }) => {
+    axios
+      .post(`${process.env.REACT_APP_API_DOMAIN}/api/booking/add`, data)
+      .then((res) => {
+        console.log(res);
+        navigate("/pay-done");
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+  const [availabeTiming, setAvailableTiming] = useState([]);
+  const [durationOptions, setDurationOptions] = useState([]);
+
+  const getTime = (data: { date: Date; sportId: string; venueId: string }) => {
+    axios
+      .post(
+        `${process.env.REACT_APP_API_DOMAIN}/api/venue/get_available_timings`,
+        data
+      )
+      .then((res) => {
+        setFilteredData((prev) => ({
+          ...prev,
+          time: "",
+          courts: [],
+          duration: "",
+        }));
+        setAvailableTiming(res.data);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+
+  const getDuration = (data: {
+    venueId: string;
+    sportId: string;
+    date: Date;
+    start_time: Date;
+  }) => {
+    axios
+      .post(`${process.env.REACT_APP_API_DOMAIN}/api/venue/get_durations`, data)
+      .then((res) => {
+        setDurationOptions(res.data);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+  const [sports, setSports] = useState<{ label: string; id: string }[]>([]);
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_API_DOMAIN}/api/sport/get_all`)
       .then((response) => {
-        setSports(response.data.map((d: any) => d.name));
+        setSports(
+          response.data.map((d: any) => ({ label: d.name, id: d._id }))
+        );
       })
       .catch((err) => toast.error("Something went wrong!"));
   }, []);
@@ -128,13 +198,21 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
         >
           <option value="">Select any</option>
           {sports.map((sport) => (
-            <option value={sport}>{sport}</option>
+            <option value={sport.id}>{sport.label}</option>
           ))}
         </Select>
         <div className="listingSectionSidebar__wrap p-4">
           <p>Select a Date</p>
           <FlightDateRangeInput
-            onchange={(e) => setFilteredData((prev) => ({ ...prev, date: e }))}
+            onchange={(e) => {
+              setFilteredData((prev) => ({ ...prev, date: e }));
+              e &&
+                getTime({
+                  date: e,
+                  sportId: filteredData.sports,
+                  venueId: id,
+                });
+            }}
             selectsRange={false}
             fieldClassName="py-2"
             value={filteredData.date}
@@ -149,7 +227,40 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
             padding="p-0"
             placeHolder="Time"
             value={filteredData.time}
-            onChange={(e) => setFilteredData((prev) => ({ ...prev, time: e }))}
+            availableTiming={availabeTiming}
+            onChange={(e) => {
+              if (e) {
+                let currentDate = new Date();
+
+                let matchResult = e.match(/(\d+):(\d+) (\w+)/);
+
+                if (matchResult) {
+                  let [hours, minutes, period]: any = matchResult.slice(1);
+                  hours = parseInt(hours, 10);
+                  minutes = parseInt(minutes, 10);
+
+                  // Adjust hours for PM
+                  if (period.toLowerCase() === "pm" && hours !== 12) {
+                    hours += 12;
+                  }
+
+                  // Set the time on the current date
+                  currentDate.setHours(hours);
+                  currentDate.setMinutes(minutes);
+
+                  filteredData.date &&
+                    getDuration({
+                      venueId: id,
+                      sportId: filteredData.sports,
+                      date: filteredData.date,
+                      start_time: currentDate,
+                    });
+                }
+              }
+              setFilteredData((prev) => ({ ...prev, time: e }));
+
+              console.log(e);
+            }}
           />
           <DurationInput
             value={filteredData.duration}
@@ -158,6 +269,7 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
             }
             fieldClassName="p-0"
             placeHolder="Duration"
+            options={durationOptions}
             caption={false}
           />
 
@@ -167,14 +279,12 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
               data.courts.map((d: any) => (
                 <>
                   <div className="flex justify-between">
-                    {d.sport_id.name}
+                    {d.court_name}
                     <button
                       onClick={() =>
-                        filteredData.courts.includes(d.sport_id._id)
+                        filteredData.courts.includes(d._id)
                           ? setFilteredData((prev) => {
-                              let index = filteredData.courts.indexOf(
-                                d.sport_id._id
-                              );
+                              let index = filteredData.courts.indexOf(d._id);
                               if (index !== -1) {
                                 filteredData.courts.splice(index, 1);
                               }
@@ -182,19 +292,17 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
                               return { ...prev, courts: [...prev.courts] };
                             })
                           : setFilteredData((prev) => {
-                              prev.courts.push(d.sport_id._id);
+                              prev.courts.push(d._id);
                               return { ...prev, courts: [...prev.courts] };
                             })
                       }
                       className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
-                        filteredData.courts.includes(d.sport_id._id)
+                        filteredData.courts.includes(d._id)
                           ? "bg-[blue] text-[white]"
                           : ""
                       }`}
                     >
-                      {filteredData.courts.includes(d.sport_id._id)
-                        ? "Added"
-                        : "Add"}
+                      {filteredData.courts.includes(d._id) ? "Added" : "Add"}
                     </button>
                   </div>
                   <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
@@ -203,26 +311,24 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
           </div>
           {data &&
             data.courts.filter((d: any) => {
-              return filteredData.courts.includes(d.sport_id._id);
+              return filteredData.courts.includes(d._id);
             }).length > 0 && (
               <>
                 <div>Selected Court</div>
                 <div>
                   {data.courts
                     .filter((d: any) => {
-                      return filteredData.courts.includes(d.sport_id._id);
+                      return filteredData.courts.includes(d._id);
                     })
                     .map((d: any) => (
                       <div className="flex justify-between">
-                        <p>{d.sport_id.name}</p>
+                        <p>{d.court_name}</p>
                         <MinusCircleIcon
                           color="red"
                           className="w-5 cursor-pointer"
                           onClick={() =>
                             setFilteredData((prev) => {
-                              let index = filteredData.courts.indexOf(
-                                d.sport_id._id
-                              );
+                              let index = filteredData.courts.indexOf(d._id);
                               if (index !== -1) {
                                 filteredData.courts.splice(index, 1);
                               }
@@ -239,19 +345,11 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
         </div>
         <div className="flex flex-col space-y-4">
           <h3 className="text-2xl font-semibold">Price detail</h3>
-          <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
-            <span>$19 x 3 day</span>
-            <span>$57</span>
-          </div>
-          <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
-            <span>Service charge</span>
-            <span>$0</span>
-          </div>
 
           <div className="border-b border-neutral-200 dark:border-neutral-700"></div>
           <div className="flex justify-between font-semibold">
             <span>Total</span>
-            <span>$57</span>
+            <span>$130</span>
           </div>
         </div>
       </div>
@@ -355,7 +453,63 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
               </Tab.Panels>
             </Tab.Group>
             <div className="pt-8">
-              <ButtonPrimary href={"/pay-done"}>Confirm and pay</ButtonPrimary>
+              <ButtonPrimary
+                onClick={() => {
+                  if (filteredData.time) {
+                    let currentDate = new Date();
+
+                    let matchResult =
+                      filteredData.time.match(/(\d+):(\d+) (\w+)/);
+
+                    if (matchResult) {
+                      let [hours, minutes, period]: any = matchResult.slice(1);
+                      hours = parseInt(hours, 10);
+                      minutes = parseInt(minutes, 10);
+
+                      // Adjust hours for PM
+                      if (period.toLowerCase() === "pm" && hours !== 12) {
+                        hours += 12;
+                      }
+
+                      // Set the time on the current date
+                      currentDate.setHours(hours);
+                      currentDate.setMinutes(minutes);
+                      console.log(filteredData.time);
+                      let [startHours, startMinutes] = filteredData.time
+                        .split(" ")[0]
+                        .split(":")
+                        .map(Number);
+                      const data: any = filteredData.duration.split(" ")[0];
+                      console.log({ data, startHours, startMinutes });
+                      // Convert duration to milliseconds
+                      let durationInMilliseconds = +data * 60 * 60 * 1000;
+
+                      // Create a new Date object with the start time
+                      let startTimeObject = new Date();
+                      startTimeObject.setHours(startHours);
+                      startTimeObject.setMinutes(startMinutes);
+
+                      // Add the duration to the start time
+                      let endTimeObject = new Date(
+                        startTimeObject.getTime() + durationInMilliseconds
+                      );
+
+                      filteredData.date &&
+                        bookOrder({
+                          venue_id: id,
+                          date: filteredData.date,
+                          start_time: currentDate,
+                          amount_paid: "0",
+                          court_id: filteredData.courts[0],
+                          end_time: endTimeObject,
+                          user_id: userId,
+                        });
+                    }
+                  }
+                }}
+              >
+                Confirm and pay
+              </ButtonPrimary>
             </div>
           </div>
         </div>
@@ -374,3 +528,5 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
 };
 
 export default CheckOutPagePageMain;
+
+// /pay-done

@@ -24,9 +24,11 @@ import { optionsList } from "components/HeroSearchForm/TimeInput";
 const StayDetailPageContainer = ({
   data,
   sports,
+  venueId,
 }: {
   data: any;
-  sports: string[];
+  sports: { id: string; label: string }[];
+  venueId: string;
 }) => {
   //
 
@@ -88,7 +90,7 @@ const StayDetailPageContainer = ({
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="border border-[blue] text-[blue] text-xs px-2 py-2 cursor-pointer rounded-sm"
+            className="border border-[#4338CA] text-[#4338CA] dark:bg-[#4338CA] dark:text-[white] text-xs font-semibold px-2 py-2 cursor-pointer rounded-sm"
           >
             View Availability
           </button>
@@ -121,8 +123,8 @@ const StayDetailPageContainer = ({
                         </button>
                       </div>
                     </>
-                    <div className="w-1/2 m-auto flex-1 pt-12 p-1 flex flex-col overflow-auto">
-                      <h1 className="text-2xl text-[white]">
+                    <div className="w-1/2 m-auto flex-1 mt-12  pt-12 p-1 flex flex-col overflow-auto">
+                      <h1 className="text-2xl font-bold text-[black] dark:text-[white] ">
                         Live Availability
                       </h1>
                       <div className="w-[120px] h-[1px] bg-slate-700 mt-3"></div>
@@ -149,13 +151,13 @@ const StayDetailPageContainer = ({
                         }
                         value={availabilityFilterData.date}
                       />
-                      <div className="max-w-4xl mx-auto">
+                      <div className="max-w-4xl mx-auto mt-12">
                         <div className="flex flex-col">
                           <div className="overflow-x-auto shadow-md sm:rounded-lg">
                             <div className="inline-block min-w-full align-middle">
                               <div className="overflow-hidden ">
                                 <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
-                                  <thead className="bg-gray-100 dark:bg-gray-700">
+                                  <thead className="bg-gray-300 dark:bg-gray-700">
                                     <tr>
                                       <th
                                         scope="col"
@@ -182,7 +184,7 @@ const StayDetailPageContainer = ({
                                         <td
                                           className={`py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white ${
                                             idx % 2 === 0 &&
-                                            "bg-[blue] rounded-t-md"
+                                            "bg-[#4338CA] rounded-t-md"
                                           }`}
                                         ></td>
                                       ))}
@@ -196,7 +198,7 @@ const StayDetailPageContainer = ({
                                           className={`py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white 
                                           ${
                                             idx % 2 !== 0 &&
-                                            "bg-[blue] rounded-b-md"
+                                            "bg-[#4338CA] rounded-b-md"
                                           }`}
                                         ></td>
                                       ))}
@@ -508,6 +510,44 @@ const StayDetailPageContainer = ({
       })
     );
   }, [data]);
+  const [availabeTiming, setAvailableTiming] = useState([]);
+  const [durationOptions, setDurationOptions] = useState([]);
+
+  const getTime = (data: { date: Date; sportId: string; venueId: string }) => {
+    axios
+      .post(
+        `${process.env.REACT_APP_API_DOMAIN}/api/venue/get_available_timings`,
+        data
+      )
+      .then((res) => {
+        setFilteredData((prev) => ({
+          ...prev,
+          time: "",
+          courts: [],
+          duration: "",
+        }));
+        setAvailableTiming(res.data);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
+
+  const getDuration = (data: {
+    venueId: string;
+    sportId: string;
+    date: Date;
+    start_time: Date;
+  }) => {
+    axios
+      .post(`${process.env.REACT_APP_API_DOMAIN}/api/venue/get_durations`, data)
+      .then((res) => {
+        setDurationOptions(res.data);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+      });
+  };
 
   const navigate = useNavigate();
   const [loginModal, setLoginModal] = useState(false);
@@ -524,16 +564,22 @@ const StayDetailPageContainer = ({
         >
           <option value="">Select any</option>
           {sports.map((sport) => (
-            <option value={sport}>{sport}</option>
+            <option value={sport.id}>{sport.label}</option>
           ))}
         </Select>
         {filteredData.sports && (
           <div className="listingSectionSidebar__wrap p-4">
             <p>Select a Date</p>
             <FlightDateRangeInput
-              onchange={(e) =>
-                setFilteredData((prev) => ({ ...prev, date: e }))
-              }
+              onchange={(e) => {
+                setFilteredData((prev) => ({ ...prev, date: e }));
+                e &&
+                  getTime({
+                    date: e,
+                    sportId: filteredData.sports,
+                    venueId: venueId,
+                  });
+              }}
               selectsRange={false}
               fieldClassName="py-2"
               value={filteredData.date}
@@ -548,9 +594,40 @@ const StayDetailPageContainer = ({
               padding="p-0"
               placeHolder="Time"
               value={filteredData.time}
-              onChange={(e) =>
-                setFilteredData((prev) => ({ ...prev, time: e }))
-              }
+              availableTiming={availabeTiming}
+              onChange={(e) => {
+                if (e) {
+                  let currentDate = new Date();
+
+                  let matchResult = e.match(/(\d+):(\d+) (\w+)/);
+
+                  if (matchResult) {
+                    let [hours, minutes, period]: any = matchResult.slice(1);
+                    hours = parseInt(hours, 10);
+                    minutes = parseInt(minutes, 10);
+
+                    // Adjust hours for PM
+                    if (period.toLowerCase() === "pm" && hours !== 12) {
+                      hours += 12;
+                    }
+
+                    // Set the time on the current date
+                    currentDate.setHours(hours);
+                    currentDate.setMinutes(minutes);
+
+                    filteredData.date &&
+                      getDuration({
+                        venueId: venueId,
+                        sportId: filteredData.sports,
+                        date: filteredData.date,
+                        start_time: currentDate,
+                      });
+                  }
+                }
+                setFilteredData((prev) => ({ ...prev, time: e }));
+
+                console.log(e);
+              }}
             />
             <DurationInput
               value={filteredData.duration}
@@ -560,6 +637,7 @@ const StayDetailPageContainer = ({
               fieldClassName="p-0"
               placeHolder="Duration"
               caption={false}
+              options={durationOptions}
             />
             {filteredData.date &&
               filteredData.duration &&
@@ -573,10 +651,10 @@ const StayDetailPageContainer = ({
                           {d.court_name}
                           <button
                             onClick={() =>
-                              filteredData.courts.includes(d.court_code)
+                              filteredData.courts.includes(d._id)
                                 ? setFilteredData((prev) => {
                                     let index = filteredData.courts.indexOf(
-                                      d.court_code
+                                      d._id
                                     );
                                     if (index !== -1) {
                                       filteredData.courts.splice(index, 1);
@@ -588,7 +666,7 @@ const StayDetailPageContainer = ({
                                     };
                                   })
                                 : setFilteredData((prev) => {
-                                    prev.courts.push(d.court_code);
+                                    prev.courts.push(d._id);
                                     return {
                                       ...prev,
                                       courts: [...prev.courts],
@@ -596,12 +674,12 @@ const StayDetailPageContainer = ({
                                   })
                             }
                             className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
-                              filteredData.courts.includes(d.court_code)
+                              filteredData.courts.includes(d._id)
                                 ? "bg-[blue] text-[white]"
                                 : ""
                             }`}
                           >
-                            {filteredData.courts.includes(d.court_code)
+                            {filteredData.courts.includes(d._id)
                               ? "Added"
                               : "Add"}
                           </button>
@@ -613,26 +691,24 @@ const StayDetailPageContainer = ({
                 </>
               )}
             {data.courts.filter((d: any) => {
-              return filteredData.courts.includes(d.court_code);
+              return filteredData.courts.includes(d._id);
             }).length > 0 && (
               <>
                 <div>Selected Court</div>
                 <div>
                   {data.courts
                     .filter((d: any) => {
-                      return filteredData.courts.includes(d.court_code);
+                      return filteredData.courts.includes(d._id);
                     })
                     .map((d: any) => (
                       <div className="flex justify-between">
-                        <p>{d.court_code}</p>
+                        <p>{d.court_name}</p>
                         <MinusCircleIcon
                           color="red"
                           className="w-5 cursor-pointer"
                           onClick={() =>
                             setFilteredData((prev) => {
-                              let index = filteredData.courts.indexOf(
-                                d.court_code
-                              );
+                              let index = filteredData.courts.indexOf(d._id);
                               if (index !== -1) {
                                 filteredData.courts.splice(index, 1);
                               }
@@ -649,6 +725,15 @@ const StayDetailPageContainer = ({
           </div>
         )}
         <ButtonPrimary
+          disabled={
+            !Boolean(
+              filteredData.courts.length > 0 &&
+                filteredData.date &&
+                filteredData.duration &&
+                filteredData.sports &&
+                filteredData.time
+            )
+          }
           onClick={() => {
             console.log(filteredData);
             const queryParams = Object.keys(filteredData)
@@ -701,7 +786,7 @@ const StayDetailPageContainer = ({
             }
           }}
         >
-          Reserve
+          Reserve ($ {130 * filteredData.courts.length})
         </ButtonPrimary>
       </div>
     );
@@ -836,7 +921,12 @@ export default function ListingStayDetailPage() {
       .then((res) => {
         setData(res.data);
         setLoading(false);
-        setSports(res.data.courts.map((d: any) => d.sport_id.name));
+        setSports(
+          res.data.courts.map((d: any) => ({
+            label: d.sport_id.name,
+            id: d.sport_id._id,
+          }))
+        );
       })
       .catch(() => {
         toast.error("Something went wrong!");
@@ -846,7 +936,9 @@ export default function ListingStayDetailPage() {
 
   return (
     <DetailPagetLayout>
-      {data && <StayDetailPageContainer data={data} sports={sports} />}
+      {data && (
+        <StayDetailPageContainer data={data} sports={sports} venueId={id} />
+      )}
       {loading && <CustomLoader />}
     </DetailPagetLayout>
   );
