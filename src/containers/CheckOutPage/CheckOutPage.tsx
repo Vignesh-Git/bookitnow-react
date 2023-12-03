@@ -140,7 +140,11 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
   const [availabeTiming, setAvailableTiming] = useState([]);
   const [durationOptions, setDurationOptions] = useState([]);
 
-  const getTime = (data: { date: Date; sportId: string; venueId: string }) => {
+  const getTime = (data: {
+    date: string;
+    sportId: string;
+    venueId: string;
+  }) => {
     axios
       .post(
         `${process.env.REACT_APP_API_DOMAIN}/api/venue/get_available_timings`,
@@ -163,7 +167,7 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
   const getDuration = (data: {
     venueId: string;
     sportId: string;
-    date: Date;
+    date: string;
     start_time: Date;
   }) => {
     axios
@@ -206,12 +210,18 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
           <FlightDateRangeInput
             onchange={(e) => {
               setFilteredData((prev) => ({ ...prev, date: e }));
-              e &&
+              if (e) {
+                const searchDate = new Date(
+                  new Date(e).getTime() -
+                    new Date(e).getTimezoneOffset() * 60000
+                ).toISOString();
+
                 getTime({
-                  date: e,
+                  date: searchDate,
                   sportId: filteredData.sports,
                   venueId: id,
                 });
+              }
             }}
             selectsRange={false}
             fieldClassName="py-2"
@@ -248,13 +258,19 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
                   currentDate.setHours(hours);
                   currentDate.setMinutes(minutes);
 
-                  filteredData.date &&
+                  if (filteredData.date) {
+                    const searchDate = new Date(
+                      new Date(filteredData.date).getTime() -
+                        new Date(filteredData.date).getTimezoneOffset() * 60000
+                    ).toISOString();
+
                     getDuration({
                       venueId: id,
                       sportId: filteredData.sports,
-                      date: filteredData.date,
+                      date: searchDate,
                       start_time: currentDate,
                     });
+                  }
                 }
               }
               setFilteredData((prev) => ({ ...prev, time: e }));

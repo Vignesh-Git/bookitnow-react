@@ -22,7 +22,7 @@ const widgetMenus: WidgetFooterMenu[] = [
     id: "1",
     title: "About Us",
     menus: [
-      { href: "#", label: "About Us" },
+      { href: "/about", label: "About Us" },
       { href: "#", label: "Our Blog" },
       { href: "#", label: "Like Bookitnow? Refer a centre to us!" },
       { href: "#", label: "Careers" },

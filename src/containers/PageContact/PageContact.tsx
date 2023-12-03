@@ -16,15 +16,15 @@ export interface PageContactProps {
 const info = [
   {
     title: "🗺 ADDRESS",
-    desc: "Photo booth tattooed prism, portland taiyaki hoodie neutra typewriter",
+    desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. ",
   },
   {
     title: "💌 EMAIL",
-    desc: "nc.example@example.com",
+    desc: "bookitnow@gmail.com",
   },
   {
     title: "☎ PHONE",
-    desc: "000-123-456-7890",
+    desc: "000-000-0000",
   },
 ];
 
@@ -93,15 +93,6 @@ const PageContact: FC<PageContactProps> = ({ className = "" }) => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* OTHER SECTIONS */}
-      <div className="container">
-        <div className="relative py-16">
-          <BackgroundSection />
-          <SectionClientSay uniqueClassName="Pagecontact_" />
-        </div>
-        <SectionSubscribe2 className="py-24 lg:py-32" />
       </div>
     </div>
   );

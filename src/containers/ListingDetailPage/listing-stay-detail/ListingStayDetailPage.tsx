@@ -18,7 +18,7 @@ import tokenHandler from "utils/tokenHandler";
 import { Dialog, Transition } from "@headlessui/react";
 import PageLogin from "containers/PageLogin/PageLogin";
 import SportInput from "components/HeroSearchForm/SportInput";
-import CustomLoader from "components/CustomLoader";
+import CustomLoader, { Loader } from "components/CustomLoader";
 import { optionsList } from "components/HeroSearchForm/TimeInput";
 
 const StayDetailPageContainer = ({
@@ -31,6 +31,33 @@ const StayDetailPageContainer = ({
   venueId: string;
 }) => {
   //
+
+  const availableTiming = [
+    "7:00 AM",
+    "8:00 AM",
+    "9:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "12:00 PM",
+    "1:00 PM",
+    "2:00 PM",
+    "3:00 PM",
+    "4:00 PM",
+    "5:00 PM",
+    "6:00 PM",
+    "7:00 PM",
+    "8:00 PM",
+    "9:00 PM",
+    "10:00 PM",
+    "11:00 PM",
+    "12:00 AM",
+    "1:00 AM",
+    "2:00 AM",
+    "3:00 AM",
+    "4:00 AM",
+    "5:00 AM",
+    "6:00 AM",
+  ];
 
   const thisPathname = useLocation().pathname;
   const router = useNavigate();
@@ -53,6 +80,25 @@ const StayDetailPageContainer = ({
     date: null,
     sports: "",
   });
+
+  const [availabilityData, setAvailabilityData] = useState([]);
+  const [loader, setLoader] = useState(false);
+  const getAvailability = (date: string) => {
+    setLoader(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_API_DOMAIN}/api/venue/get_live_availability`,
+        { venueId: venueId, date: date }
+      )
+      .then((res) => {
+        setAvailabilityData(res.data);
+        setLoader(false);
+      })
+      .catch(() => {
+        toast.error("Something went wrong!");
+        setLoader(false);
+      });
+  };
 
   const renderSection1 = () => {
     return (
@@ -123,93 +169,110 @@ const StayDetailPageContainer = ({
                         </button>
                       </div>
                     </>
-                    <div className="w-1/2 m-auto flex-1 mt-12  pt-12 p-1 flex flex-col overflow-auto">
-                      <h1 className="text-2xl font-bold text-[black] dark:text-[white] ">
-                        Live Availability
-                      </h1>
-                      <div className="w-[120px] h-[1px] bg-slate-700 mt-3"></div>
-                      <SportInput
-                        value={availabilityFilterData.sports}
-                        placeHolder="Sport"
-                        desc="What do you want to play?"
-                        divHideVerticalLineClass=" -inset-x-0.5"
-                        className="block"
-                        onchange={(e) =>
-                          setAvailabilityFilterData((prev) => ({
-                            ...prev,
-                            sports: e,
-                          }))
-                        }
-                      />
-                      <FlightDateRangeInput
-                        selectsRange={false}
-                        onchange={(e) =>
-                          setAvailabilityFilterData((prev) => ({
-                            ...prev,
-                            date: e,
-                          }))
-                        }
-                        value={availabilityFilterData.date}
-                      />
-                      <div className="max-w-4xl mx-auto mt-12">
-                        <div className="flex flex-col">
-                          <div className="overflow-x-auto shadow-md sm:rounded-lg">
-                            <div className="inline-block min-w-full align-middle">
-                              <div className="overflow-hidden ">
-                                <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
-                                  <thead className="bg-gray-300 dark:bg-gray-700">
-                                    <tr>
-                                      <th
-                                        scope="col"
-                                        className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400"
-                                      >
-                                        Court Name
-                                      </th>
-                                      {optionsList.map((d) => (
-                                        <th
-                                          scope="col"
-                                          className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400"
-                                        >
-                                          {d}
-                                        </th>
-                                      ))}
-                                    </tr>
-                                  </thead>
-                                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                    <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <div className=" flex-1 mt-12  pt-12 p-1 flex flex-col overflow-auto">
+                      <div className="w-[430px] mx-auto">
+                        <h1 className="text-2xl font-bold  text-[black] dark:text-[white] ">
+                          Live Availability
+                        </h1>
+                        <div className="w-[120px] h-[1px]  bg-slate-700 mt-3"></div>
+                      </div>
+                      <div className="w-[430px] mx-auto mt-4">
+                        <FlightDateRangeInput
+                          className=" mx-auto"
+                          selectsRange={false}
+                          onchange={(e) => {
+                            setAvailabilityFilterData((prev) => ({
+                              ...prev,
+                              date: e,
+                            }));
+                            if (e) {
+                              const searchDate = new Date(
+                                new Date(e).getTime() -
+                                  new Date(e).getTimezoneOffset() * 60000
+                              ).toISOString();
+                              getAvailability(searchDate);
+                            }
+                          }}
+                          value={availabilityFilterData.date}
+                        />
+                      </div>
+                      <div className="w-[430px] mx-auto flex gap-5">
+                        <div className="flex gap-2 items-center">
+                          <span className="border h-2 p-2 w-1"></span>
+                          <span className="text-xs">Not Available</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <span className="border bg-[blue] h-2 p-2 w-1"></span>
+                          <span className="text-xs">Available</span>
+                        </div>
+                      </div>
+                      {loader ? (
+                        <CustomLoader />
+                      ) : (
+                        availabilityData.length > 0 && (
+                          <div className=" mx-12 mt-12 ">
+                            <div className="flex flex-col">
+                              <div className="overflow-x-auto shadow-md">
+                                <div className="inline-block min-w-full align-middle">
+                                  <div className="overflow-hidden ">
+                                    <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
+                                      <thead className="bg-gray-300 dark:bg-gray-700">
+                                        <tr>
+                                          <th
+                                            scope="col"
+                                            className="p-2 border text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400"
+                                          >
+                                            Court Name
+                                          </th>
+                                          {availableTiming.map((d) => (
+                                            <th
+                                              scope="col"
+                                              colSpan={2}
+                                              className="p-2 border text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400"
+                                            >
+                                              {d}
+                                            </th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+                                      <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                        {/* <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                      <td className="p-2 py-3 border text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         Badminton Court
                                       </td>
                                       {optionsList.map((d, idx) => (
                                         <td
-                                          className={`py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white ${
-                                            idx % 2 === 0 &&
-                                            "bg-[#4338CA] rounded-t-md"
+                                          className={`p-2 text-sm border font-medium text-gray-900 whitespace-nowrap dark:text-white ${
+                                            idx % 2 === 0 && "bg-[#4338CA]"
                                           }`}
                                         ></td>
                                       ))}
-                                    </tr>
-                                    <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        Badminton Court
-                                      </td>
-                                      {optionsList.map((d, idx) => (
-                                        <td
-                                          className={`py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white 
-                                          ${
-                                            idx % 2 !== 0 &&
-                                            "bg-[#4338CA] rounded-b-md"
-                                          }`}
-                                        ></td>
-                                      ))}
-                                    </tr>
-                                  </tbody>
-                                </table>
+                                    </tr> */}
+                                        {availabilityData.map((data: any) => (
+                                          <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <td className="p-2 py-3 border text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                              {data.courtDetails.court_name}
+                                            </td>
+                                            {optionsList.map((d, idx) => (
+                                              <td
+                                                className={`p-2 text-sm border font-medium text-gray-900 whitespace-nowrap dark:text-white ${
+                                                  data.availability.includes(
+                                                    d
+                                                  ) && "bg-[#4338CA]"
+                                                }`}
+                                              ></td>
+                                            ))}
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        )
+                      )}
                     </div>
                   </Dialog.Panel>
                 </Transition.Child>
@@ -510,10 +573,11 @@ const StayDetailPageContainer = ({
       })
     );
   }, [data]);
+
   const [availabeTiming, setAvailableTiming] = useState([]);
   const [durationOptions, setDurationOptions] = useState([]);
 
-  const getTime = (data: { date: Date; sportId: string; venueId: string }) => {
+  const getTime = (data: any) => {
     axios
       .post(
         `${process.env.REACT_APP_API_DOMAIN}/api/venue/get_available_timings`,
@@ -533,12 +597,7 @@ const StayDetailPageContainer = ({
       });
   };
 
-  const getDuration = (data: {
-    venueId: string;
-    sportId: string;
-    date: Date;
-    start_time: Date;
-  }) => {
+  const getDuration = (data: any) => {
     axios
       .post(`${process.env.REACT_APP_API_DOMAIN}/api/venue/get_durations`, data)
       .then((res) => {
@@ -573,12 +632,18 @@ const StayDetailPageContainer = ({
             <FlightDateRangeInput
               onchange={(e) => {
                 setFilteredData((prev) => ({ ...prev, date: e }));
-                e &&
+                if (e) {
+                  const searchDate = new Date(
+                    new Date(e).getTime() -
+                      new Date(e).getTimezoneOffset() * 60000
+                  ).toISOString();
+
                   getTime({
-                    date: e,
+                    date: searchDate,
                     sportId: filteredData.sports,
                     venueId: venueId,
                   });
+                }
               }}
               selectsRange={false}
               fieldClassName="py-2"
@@ -615,13 +680,20 @@ const StayDetailPageContainer = ({
                     currentDate.setHours(hours);
                     currentDate.setMinutes(minutes);
 
-                    filteredData.date &&
+                    if (filteredData.date) {
+                      const searchDate = new Date(
+                        new Date(filteredData.date).getTime() -
+                          new Date(filteredData.date).getTimezoneOffset() *
+                            60000
+                      ).toISOString();
+
                       getDuration({
                         venueId: venueId,
                         sportId: filteredData.sports,
-                        date: filteredData.date,
+                        date: searchDate,
                         start_time: currentDate,
                       });
+                    }
                   }
                 }
                 setFilteredData((prev) => ({ ...prev, time: e }));

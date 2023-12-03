@@ -196,7 +196,7 @@ export const NAVIGATION_DEMO: NavItemType[] = [
   },
   {
     id: ncNanoId(),
-    href: "/",
+    href: "/about",
     name: "About Us",
     // type: "none",
     // children: demoChildMenus,
@@ -204,7 +204,7 @@ export const NAVIGATION_DEMO: NavItemType[] = [
   },
   {
     id: ncNanoId(),
-    href: "/",
+    href: "/contact",
     name: "Help Center",
     // type: "none",
     // children: demoChildMenus,
