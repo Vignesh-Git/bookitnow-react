@@ -46,7 +46,6 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
   });
 
   const [days, setDays] = useState<number[]>([]);
-
   const [data, setData] = useState<any>();
   const router = useLocation();
   const id = router.pathname.split("/")[router.pathname.split("/").length - 1];
@@ -118,6 +117,36 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
     }
   }, [document.cookie]);
   const navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        "https://www.billplz.com/api/v3/bills", // Replace with the actual endpoint
+        {
+          collection_id: "07lvjylx",
+          email: "balakeerthi2710@gmail.com",
+          mobile: "+919361444235",
+          name: "Keerthivasan B",
+          amount: "0.1",
+          callback_url: "https://www.google.com",
+          description: "For Court Bookings",
+        },
+        {
+          headers: {
+            Authorization:
+              "Basic YzNlYTQ1NGMtMTBkMC00N2Y5LTlkMTktZGVmZDAzMDA5MmRl", // Replace with your actual API key
+          },
+        }
+      );
+
+      console.log(response.data);
+      // Handle the response as needed (update UI, show success message, etc.)
+    } catch (error) {
+      console.error(error);
+      // Handle errors (display error message, log the error, etc.)
+    }
+  };
+
   const bookOrder = (data: {
     user_id: string;
     venue_id: string;
@@ -127,6 +156,8 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
     end_time: Date;
     amount_paid: string;
   }) => {
+    console.log("first");
+
     axios
       .post(`${process.env.REACT_APP_API_DOMAIN}/api/booking/add`, data)
       .then((res) => {
@@ -313,12 +344,12 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
                             })
                       }
                       className={`border text-[blue] text-xs px-2 py-1 border-[blue] rounded-md ${
-                        filteredData.courts.includes(d._id)
+                        filteredData.courts?.includes(d._id)
                           ? "bg-[blue] text-[white]"
                           : ""
                       }`}
                     >
-                      {filteredData.courts.includes(d._id) ? "Added" : "Add"}
+                      {filteredData.courts?.includes(d._id) ? "Added" : "Add"}
                     </button>
                   </div>
                   <div className="h-[1px] bg-neutral-200 dark:bg-neutral-700 my-3"></div>
@@ -327,7 +358,7 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
           </div>
           {data &&
             data.courts.filter((d: any) => {
-              return filteredData.courts.includes(d._id);
+              return filteredData.courts?.includes(d._id);
             }).length > 0 && (
               <>
                 <div>Selected Court</div>
@@ -470,59 +501,60 @@ const CheckOutPagePageMain: FC<CheckOutPagePageMainProps> = ({
             </Tab.Group>
             <div className="pt-8">
               <ButtonPrimary
-                onClick={() => {
-                  if (filteredData.time) {
-                    let currentDate = new Date();
+                // onClick={() => {
+                //   if (filteredData.time) {
+                //     let currentDate = new Date();
 
-                    let matchResult =
-                      filteredData.time.match(/(\d+):(\d+) (\w+)/);
+                //     let matchResult =
+                //       filteredData.time.match(/(\d+):(\d+) (\w+)/);
 
-                    if (matchResult) {
-                      let [hours, minutes, period]: any = matchResult.slice(1);
-                      hours = parseInt(hours, 10);
-                      minutes = parseInt(minutes, 10);
+                //     if (matchResult) {
+                //       let [hours, minutes, period]: any = matchResult.slice(1);
+                //       hours = parseInt(hours, 10);
+                //       minutes = parseInt(minutes, 10);
 
-                      // Adjust hours for PM
-                      if (period.toLowerCase() === "pm" && hours !== 12) {
-                        hours += 12;
-                      }
+                //       // Adjust hours for PM
+                //       if (period.toLowerCase() === "pm" && hours !== 12) {
+                //         hours += 12;
+                //       }
 
-                      // Set the time on the current date
-                      currentDate.setHours(hours);
-                      currentDate.setMinutes(minutes);
-                      console.log(filteredData.time);
-                      let [startHours, startMinutes] = filteredData.time
-                        .split(" ")[0]
-                        .split(":")
-                        .map(Number);
-                      const data: any = filteredData.duration.split(" ")[0];
-                      console.log({ data, startHours, startMinutes });
-                      // Convert duration to milliseconds
-                      let durationInMilliseconds = +data * 60 * 60 * 1000;
+                //       // Set the time on the current date
+                //       currentDate.setHours(hours);
+                //       currentDate.setMinutes(minutes);
+                //       console.log(filteredData.time);
+                //       let [startHours, startMinutes] = filteredData.time
+                //         .split(" ")[0]
+                //         .split(":")
+                //         .map(Number);
+                //       const data: any = filteredData.duration.split(" ")[0];
+                //       console.log({ data, startHours, startMinutes });
+                //       // Convert duration to milliseconds
+                //       let durationInMilliseconds = +data * 60 * 60 * 1000;
 
-                      // Create a new Date object with the start time
-                      let startTimeObject = new Date();
-                      startTimeObject.setHours(startHours);
-                      startTimeObject.setMinutes(startMinutes);
+                //       // Create a new Date object with the start time
+                //       let startTimeObject = new Date();
+                //       startTimeObject.setHours(startHours);
+                //       startTimeObject.setMinutes(startMinutes);
 
-                      // Add the duration to the start time
-                      let endTimeObject = new Date(
-                        startTimeObject.getTime() + durationInMilliseconds
-                      );
+                //       // Add the duration to the start time
+                //       let endTimeObject = new Date(
+                //         startTimeObject.getTime() + durationInMilliseconds
+                //       );
 
-                      filteredData.date &&
-                        bookOrder({
-                          venue_id: id,
-                          date: filteredData.date,
-                          start_time: currentDate,
-                          amount_paid: "0",
-                          court_id: filteredData.courts[0],
-                          end_time: endTimeObject,
-                          user_id: userId,
-                        });
-                    }
-                  }
-                }}
+                //       filteredData.date &&
+                //         bookOrder({
+                //           venue_id: id,
+                //           date: filteredData.date,
+                //           start_time: currentDate,
+                //           amount_paid: "0",
+                //           court_id: filteredData.courts[0],
+                //           end_time: endTimeObject,
+                //           user_id: userId,
+                //         });
+                //     }
+                //   }
+                // }}
+                onClick={() => handleSubmit()}
               >
                 Confirm and pay
               </ButtonPrimary>

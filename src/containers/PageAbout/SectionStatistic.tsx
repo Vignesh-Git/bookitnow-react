@@ -7,23 +7,37 @@ export interface Statistic {
   subHeading: string;
 }
 
-const FOUNDER_DEMO: Statistic[] = [
+export const FOUNDER_DEMO: Statistic[] = [
   {
     id: "1",
-    heading: "10 million",
+    heading: "Proven revitalization expertise",
     subHeading:
-      "Articles have been public around the world (as of Sept. 30, 2021)",
+      "With a proven track record of transforming neglected properties into moder, functional spaces, we consistently exceed expectations.",
   },
   {
     id: "2",
-    heading: "100,000",
-    subHeading: "Registered users account (as of Sept. 30, 2021)",
+    heading: "Transparent and timely communication",
+    subHeading:
+      "We offer clear, frequent updates on progess, budgets, and timelines, fostering trust in our partnerships.",
   },
   {
     id: "3",
-    heading: "220+",
+    heading: "Cutting-edge innovative design",
     subHeading:
-      "Countries and regions have our presence (as of Sept. 30, 2021)",
+      "Our designs combine aesthetics and functionalitu. setting new standards in property design.",
+  },
+
+  {
+    id: "4",
+    heading: "Eco-conscious sustainablility",
+    subHeading:
+      "We prioritise eco-friendly technologies and materials, reducing environmental impact and long-term operating costs",
+  },
+  {
+    id: "5",
+    heading: "Community-centric collaboration",
+    subHeading:
+      "We engage local communities to ensure our projects align with neighbourhood character and needs.",
   },
 ];
 
@@ -34,24 +48,56 @@ export interface SectionStatisticProps {
 const SectionStatistic: FC<SectionStatisticProps> = ({ className = "" }) => {
   return (
     <div className={`nc-SectionStatistic relative ${className}`}>
-      <Heading
-        desc=" We’re impartial and independent, and every day we create distinctive,
-          world-class programmes and content"
-      >
-        🚀 Fast Facts
-      </Heading>
+      <Heading>WHY CHOOSE US</Heading>
       <div className="grid md:grid-cols-2 gap-6 lg:grid-cols-3 xl:gap-8">
         {FOUNDER_DEMO.map((item) => (
           <div
             key={item.id}
-            className="p-6 bg-neutral-50 dark:bg-neutral-800 rounded-2xl dark:border-neutral-800"
+            className="p-6 relative bg-neutral-50 dark:bg-neutral-800 rounded-2xl dark:border-neutral-800"
           >
-            <h3 className="text-2xl font-semibold leading-none text-neutral-900 md:text-3xl dark:text-neutral-200">
+            <h3 className="text-lg uppercase font-semibold leading-none text-neutral-900 md:text-3xl dark:text-neutral-200">
               {item.heading}
             </h3>
             <span className="block text-sm text-neutral-500 mt-3 sm:text-base dark:text-neutral-400">
               {item.subHeading}
             </span>
+
+            <div
+              style={{
+                width: "90px",
+                height: "90px",
+                border: "2px solid white",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "absolute",
+                top: "-40px",
+                right: "-30px",
+              }}
+            >
+              <div
+                style={{
+                  width: "70px",
+                  height: "70px",
+                  background: "white",
+                  borderRadius: "50%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "black",
+                    fontWeight: "900",
+                    fontSize: "26px",
+                  }}
+                >
+                  {item.id}
+                </div>
+              </div>
+            </div>
           </div>
         ))}
       </div>

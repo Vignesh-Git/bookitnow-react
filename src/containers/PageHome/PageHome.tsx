@@ -152,10 +152,6 @@ function PageHome() {
         {/* <SectionVideos /> */}
 
         {/* SECTION */}
-        <div className="relative py-16">
-          <BackgroundSection />
-          <SectionClientSay uniqueClassName="PageHome_" />
-        </div>
       </div>
       {/* <CustomLoader /> */}
     </div>

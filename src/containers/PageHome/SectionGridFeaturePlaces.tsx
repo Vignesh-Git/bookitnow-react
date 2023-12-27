@@ -94,7 +94,7 @@ const SectionGridFeaturePlaces: FC<SectionGridFeaturePlacesProps> = ({
           let venues: any = [];
           venue.map((d: any) => ({
             ...d?.courts?.map((data: any) => {
-              if (data.sport_id.name === e) venues.push(d);
+              if (data?.sport_id?.name === e) venues.push(d);
             }),
           }));
           setFeaturedVenues(venues);

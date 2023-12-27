@@ -28,6 +28,11 @@ module.exports = {
       display: ["var(--font-display)", ...defaultTheme.fontFamily.sans],
       body: ["var(--font-body)", ...defaultTheme.fontFamily.sans],
     },
+    backgroundImage: {
+      "hero-pattern": "url('images/Vision.jpg')",
+      "mission-img": "url('images/Mission.jpg')",
+      "value-img": "url('images/OurValues.jpg')",
+    },
 
     extend: {
       colors: {

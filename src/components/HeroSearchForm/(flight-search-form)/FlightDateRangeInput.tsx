@@ -129,6 +129,7 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
                       selectsRange
                       monthsShown={2}
                       showPopperArrow={false}
+                      minDate={new Date()}
                       inline
                       renderCustomHeader={(p) => (
                         <DatePickerCustomHeaderTwoMonth {...p} />
@@ -147,6 +148,7 @@ const FlightDateRangeInput: FC<FlightDateRangeInputProps> = ({
                         if (onchange) onchange(date);
                       }}
                       filterDate={filterDate}
+                      minDate={new Date()}
                       monthsShown={2}
                       shouldCloseOnSelect={true}
                       showPopperArrow={false}

@@ -24,7 +24,7 @@ const widgetMenus: WidgetFooterMenu[] = [
     menus: [
       { href: "/about", label: "About Us" },
       { href: "#", label: "Our Blog" },
-      { href: "#", label: "Like Bookitnow? Refer a centre to us!" },
+      { href: "/refer/center", label: "Like Bookitnow? Refer a centre to us!" },
       { href: "#", label: "Careers" },
     ],
   },
@@ -81,10 +81,10 @@ const Footer: React.FC = () => {
         <div className="flex flex-col">
           <Logo />
           <div className="text-neutral-6000 dark:text-neutral-300 hover:text-black dark:hover:text-white text-sm ">
-            With a user-friendly interface, real-time updates, and payment
-            options, the platform enhances convenience for individuals and
-            groups seeking to secure playing spaces for various sports and
-            recreational activities.
+            In the world of sports and events, we've witnessed the magic that
+            happens when these spaces are reborn, rebranded, and reinvigorated ,
+            creating unforgettable experiencs for attendess and generating new
+            revenue streams for our clients.
           </div>
         </div>
         {widgetMenus.map(renderWidgetMenuItem)}
@@ -94,7 +94,8 @@ const Footer: React.FC = () => {
         <div>
           <Logo />
         </div>
-        <div>
+        <div className="flex items-center gap-5">
+          V 1.0.0
           <SocialsList1 className="flex items-center space-x-3  " />
         </div>
       </div>

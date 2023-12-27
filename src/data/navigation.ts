@@ -220,7 +220,7 @@ export const NAVIGATION_DEMO: NavItemType[] = [
   },
   {
     id: ncNanoId(),
-    href: "/",
+    href: "/refer/center",
     name: "Refer a centre to us",
     // type: "none",
     // children: demoChildMenus,
